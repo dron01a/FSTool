@@ -13,7 +13,7 @@ FSTool::_finfo::_finfo(std::string full_name){
     struct _stat data;
     _stat(this->full_name.c_str(), &data);
 #endif
-    std::fstream *obj = new std::fstream(this->full_name, std::fstream::out | std::fstream::in | std::fstream::binary);
+    std::ifstream *obj = new std::ifstream(this->full_name, std::fstream::binary | std::fstream::in | std::fstream::app);
     this->size = data.st_size;
     std::string *buf = new std::string; //temporary string for getline
     while (getline(*obj, *buf)){

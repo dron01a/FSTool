@@ -87,9 +87,9 @@ public:
 
 class file_control::folder : public file_control::fs_base{
 private:
-    int _files = 0; 
+    int _files = 0;
     int _folders = 0;
-    int _elements = 0; 
+    int _elements = 0;
     void calc_size() override; // claculate size of folder 
 public:
     folder(std::string name, std::string path);//constructor
