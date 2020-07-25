@@ -7,6 +7,7 @@ namespace FSTool {
     template < class structTYPE > 
     class _base{ //base class for folder and file 
     public:
+    
         //virtual functions
         virtual structTYPE get_info() = 0;      //return struct with information
         virtual std::string get(int index) = 0; //get data fov index file system element

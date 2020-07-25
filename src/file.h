@@ -11,12 +11,12 @@ namespace FSTool {
     //struct with information of file
     struct _finfo{
         _finfo(std::string full_name);  // constructor
-        // std::string type;               // returns the file type depending on the extension
+        std::string type;               // returns the file type depending on the extension
         std::string name;               // name of file system element
         std::string path;               // path to file system element
         std::string full_name;          // name of file with path
-        int size = 0;                       // size of file system element in byte
-        int lines = 0;                      // get count strings in file
+        int size = 0;                   // size of file system element in byte
+        int lines = 0;                  // get count strings in file
         time_t last_modification;       // time of last modification
         // time_t create_time;             // time of create file
     };
@@ -24,7 +24,7 @@ namespace FSTool {
     // class for work with files
     class file : public _base<_finfo> {
     private:
-        _finfo _info;   //struct with info
+        _finfo *_info;   //struct with info
         int get_size(); // return file size
     private:
         file(std::string name, std::string path); // construcnor
@@ -32,6 +32,7 @@ namespace FSTool {
         bool exists();                           // checks the file for existence
         int create();                            // create file in directory
         int destroy();                           // delete file
+        bool empty();                            // if file empty
         _finfo get_info();                       // return information of file
         std::string get(int index);              // return string in file from index
         std::string back();                      // return last string
