@@ -94,18 +94,13 @@ int FSTool::file::create(){
 
 int FSTool::file::destroy(){
     try{
-        if(remove(this->_info->full_name.c_str())){
-            throw 1;// if can`t remove file 
+        if(this->exists()){
+            throw false;// if file exists 
         }
-        else if(this->exists()){
-            throw -1;// if file exists 
-        }
-        else{
-            throw 0;// if good 
-        }
+        return remove(this->_info->full_name.c_str()); // return result of deleting file
     }
-    catch(int code){
-        return code;// return result 
+    catch(bool res){
+        return -1;// return result
     }
 }
 
@@ -142,19 +137,22 @@ std::string FSTool::file::back(){
 }
 
 bool FSTool::file::range(int index){
-    try{
-        if(index < 0){
-            throw -1; // if out of range 
-        }  
-        else if(index > this->_info->lines){
-            throw 1; // if out of range 
-        }
-        else{
-            throw 0; // if good 
-        }  
+    if (index < 0 || index > this->_info->lines){
+        return false; // if index not in range
     }
-    catch(int result){
-        return result;
+    else{
+        return true; // if index in range
     }
 }
 
+int FSTool::file::add(std::string data){
+    if (!this->exists()){
+        return -1;  // file exists 
+    }
+    std::fstream *obj; // temp object 
+    obj = new std::fstream(this->_info->full_name, std::fstream::app | std::fstream::binary);
+    *obj << data << std::endl; // write
+    obj->close();              // save and close stream 
+    delete obj;                // free memory 
+    return 0;
+}
