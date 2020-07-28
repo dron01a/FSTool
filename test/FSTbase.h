@@ -20,11 +20,11 @@ namespace FSTool {
 
         //get data with check
         std::string at(int index) {
-            if (range(index)){ 
-                return get(index);
+            if (this->range(index)){ 
+                return this->get(index);
             }
             else{
-                return "";
+                return this->back();
             }
         }
 

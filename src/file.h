@@ -24,7 +24,7 @@ namespace FSTool {
     // class for work with files
     class file : public _base<_finfo> {
     private:
-        _finfo *_info;   //struct with info
+        _finfo *_info;  // struct with info
         int get_size(); // return file size
     private:
         file(std::string name, std::string path); // construcnor

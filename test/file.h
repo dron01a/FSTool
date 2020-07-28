@@ -15,8 +15,8 @@ namespace FSTool {
         std::string name;               // name of file system element
         std::string path;               // path to file system element
         std::string full_name;          // name of file with path
-        int size = 0;                       // size of file system element in byte
-        int lines = 0;                      // get count strings in file
+        int size = 0;                   // size of file system element in byte
+        int lines = 0;                  // get count strings in file
         time_t last_modification;       // time of last modification
         // time_t create_time;             // time of create file
     };
@@ -32,6 +32,7 @@ namespace FSTool {
         bool exists();                           // checks the file for existence
         int create();                            // create file in directory
         int destroy();                           // delete file
+        bool empty();                            // if file empty
         _finfo get_info();                       // return information of file
         std::string get(int index);              // return string in file from index
         std::string back();                      // return last string

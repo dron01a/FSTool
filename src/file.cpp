@@ -91,3 +91,70 @@ int FSTool::file::create(){
         return code;   // return result
     }
 }
+
+int FSTool::file::destroy(){
+    try{
+        if(remove(this->_info->full_name.c_str())){
+            throw 1;// if can`t remove file 
+        }
+        else if(this->exists()){
+            throw -1;// if file exists 
+        }
+        else{
+            throw 0;// if good 
+        }
+    }
+    catch(int code){
+        return code;// return result 
+    }
+}
+
+bool FSTool::file::empty(){
+    if((this->_info->size == 0) && (this->_info->lines == 0)){
+        return true; // if file empty 
+    }
+    else{
+        return false;
+    } 
+}
+
+FSTool::_finfo FSTool::file::get_info(){
+    return *this->_info; // return struct with info of file
+}
+
+std::string FSTool::file::get(int index){
+    std::fstream * object = new std::fstream(this->_info->full_name, std::fstream::out | std::fstream::in | std::fstream::binary); 
+	std::string buf; //result
+	int* i = new int(0); //temporary counter
+	while (getline(*object, buf)) {//find index
+		if (*i == index)
+			break;
+		(*i)++;
+	}
+	object->close();//close file
+	delete i;
+    delete object;
+	return buf;
+}
+
+std::string FSTool::file::back(){
+    return this->get(this->_info->lines--);// return lasr line  
+}
+
+bool FSTool::file::range(int index){
+    try{
+        if(index < 0){
+            throw -1; // if out of range 
+        }  
+        else if(index > this->_info->lines){
+            throw 1; // if out of range 
+        }
+        else{
+            throw 0; // if good 
+        }  
+    }
+    catch(int result){
+        return result;
+    }
+}
+
