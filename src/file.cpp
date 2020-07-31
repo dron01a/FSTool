@@ -76,32 +76,36 @@ bool FSTool::file::exists(){
     }
 }
 
+int FSTool::file::resize(){
+#ifdef unix
+    struct stat rdata;
+    stat(this->_info->full_name.c_str(), &rdata);
+#elif defined(WIN32)
+    struct _stat rdata;
+    _stat(this->_info->full_name.c_str(), &rdata);
+#endif
+    return rdata.st_size;
+}
+
 int FSTool::file::create(){
-    std::ofstream *temp = new std::ofstream(this->_info->full_name, std::fstream::binary); // create temp object 
-    try{
-        if (!temp->is_open()) {
-            throw 1;
-        }else{
-            throw 0;
-        }
-    }
-    catch( int code ){
+    std::ofstream *temp = new std::ofstream(this->_info->full_name, std::fstream::binary); // create temp object
+    if (!temp->is_open()){
         temp->close(); // close stream
         delete temp;   // free memory
-        return code;   // return result
+        return 1;      // return code 
+    }
+    else{
+        temp->close(); // close stream
+        delete temp;   // free memory
+        return 0;      // return code 
     }
 }
 
 int FSTool::file::destroy(){
-    try{
-        if(this->exists()){
-            throw false;// if file exists 
-        }
-        return remove(this->_info->full_name.c_str()); // return result of deleting file
+    if(!this->exists()){
+        return -1;// if file exists 
     }
-    catch(bool res){
-        return -1;// return result
-    }
+    return remove(this->_info->full_name.c_str()); // return result of deleting file
 }
 
 bool FSTool::file::empty(){
@@ -155,4 +159,31 @@ int FSTool::file::add(std::string data){
     obj->close();              // save and close stream 
     delete obj;                // free memory 
     return 0;
+}
+
+int FSTool::file::add(std::string data, int index){
+    try{
+        if (!this->exists()){
+            throw -1; // if file exists
+        }
+        if (index >= this->_info->lines){
+            throw 1; 
+        }
+        std::string *_buff = new std::string[this->_info->lines]; // temp buffeer
+        for(int i = 0; i < this->_info->lines; i++){
+            _buff[i] << this->get(i); // load file data to buff 
+        }
+        _buff[index] = data; // rewrite line 
+        this->clear(); // delete data in file
+        for(int i = 0; i < this->_info->lines; i++){
+            this->add(_buff[i]); // load buf to file  
+        }
+        delete _buff;
+        this->_info->lines++;
+        this->_info->size = resize();  // get new size from bites of file 
+        return 0; 
+    }
+    catch(int error_code){
+        return error_code;
+    }
 }
