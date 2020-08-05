@@ -25,8 +25,8 @@ namespace FSTool {
     class file : public _base<_finfo> {
     private:
         _finfo *_info;  // struct with info
-        int resize(); // return file size
-    private:
+        int resize();   // return file size
+    public:
         file(std::string name, std::string path); // construcnor
         ~file();
         bool exists();                           // checks the file for existence

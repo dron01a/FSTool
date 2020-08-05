@@ -7,11 +7,12 @@ namespace FSTool {
     template < class structTYPE > 
     class _base{ //base class for folder and file 
     public:
+    
         //virtual functions
-        virtual structTYPE get_info() = 0;      //return struct with information
-        virtual std::string get(int index) = 0; //get data fov index file system element
+        virtual structTYPE get_info() = 0;      // return struct with information
+        virtual std::string get(int index) = 0; // get data fov index file system element
         virtual std::string back() = 0;         // return last element
-        virtual bool range(int index);          //check index
+        virtual bool range(int index) = 0;      // check index
 
         //return first element 
         std::string front(){ 
@@ -20,14 +21,14 @@ namespace FSTool {
 
         //get data with check
         std::string at(int index) {
-            
-            // if (this->range(index)){ 
-            //     return this->get(index);
-            // }
-            // else{
-            //     return this->back();
-            // }
+            if ( this->range(index) ){
+                return this->get(index);
+            }
+            else{
+                //throw std::out_of_range;
+            } 
         }
+
     };
 }
 
