@@ -88,7 +88,7 @@ int FSTool::file::resize(){
 }
 
 int FSTool::file::create(){
-    std::ofstream *temp = new std::ofstream(this->_info->full_name, std::fstream::binary); // create temp object
+    std::ofstream *temp = new std::ofstream(this->_info->full_name, std::ios::binary); // create temp object
     if (!temp->is_open()){
         temp->close(); // close stream
         delete temp;   // free memory
@@ -122,7 +122,7 @@ FSTool::_finfo FSTool::file::get_info(){
 }
 
 std::string FSTool::file::get(int index){
-    std::fstream * object = new std::fstream(this->_info->full_name, std::fstream::out | std::fstream::in | std::fstream::binary); 
+    std::fstream * object = new std::fstream(this->_info->full_name, std::ios::out | std::ios::in | std::ios::binary); 
 	std::string buf; //result
 	int* i = new int(0); //temporary counter
 	while (getline(*object, buf)) {//find index
@@ -154,7 +154,7 @@ int FSTool::file::add(std::string data){
         return -1;  // file exists 
     }
     std::fstream *obj; // temp object 
-    obj = new std::fstream(this->_info->full_name, std::fstream::app | std::fstream::binary);
+    obj = new std::fstream(this->_info->full_name, std::ios::app | std::ios::binary);
     *obj << data << std::endl; // write
     obj->close();              // save and close stream 
     delete obj;                // free memory 
@@ -171,7 +171,7 @@ int FSTool::file::add(std::string data, int index){
         }
         std::string *_buff = new std::string[this->_info->lines]; // temp buffeer
         for(int i = 0; i < this->_info->lines; i++){
-            _buff[i] << this->get(i); // load file data to buff 
+            _buff[i] = this->get(i); // load file data to buff 
         }
         _buff[index] = data; // rewrite line 
         this->clear(); // delete data in file
@@ -186,4 +186,70 @@ int FSTool::file::add(std::string data, int index){
     catch(int error_code){
         return error_code;
     }
+}
+
+int FSTool::file::insert(std::string data, int index){
+    try{
+        std::fstream* temp; // temp object
+        temp->open(this->_info->full_name, std::ios::out | std::ios::in | std::ios::binary);
+        if (!this->exists()){
+            throw -1; // if file exists
+        }
+        temp->close(); // close stream 
+        if (index > this->_info->lines){
+			throw 1; // index is out of bounds of file
+		}
+        std::string *_fdata = new std::string[this->_info->lines]; //buffer
+        for (int i = 0; i < this->_info->lines; i++) { // load data in file to array
+            _fdata[i] = this->get(i);
+        }
+        this->clear();
+        for (int i = 0; i < this->_info->lines; i++){
+            if (i == index ){
+                this->add(data);// add data 
+            }
+            this->add(_fdata[i]);
+        }
+        delete[] _fdata;
+        this->_info->lines++;
+        this->_info->size = resize(); // get new size from bites of file 
+        return 0;
+    }
+    catch (int result){
+		return result;
+	}
+}
+
+int FSTool::file::insert(std::string data, int index, int count){
+    try{
+        std::fstream* temp; // temp object
+        temp->open(this->_info->full_name, std::ios::out | std::ios::in | std::ios::binary);
+        if (!this->exists()){
+            throw -1; // if file exists
+        }
+        temp->close(); // close stream 
+        if (index > this->_info->lines){
+			throw 1; // index is out of bounds of file
+		}
+        std::string *_fdata = new std::string[this->_info->lines]; //buffer
+        for (int i = 0; i < this->_info->lines; i++) { // load data in file to array
+            _fdata[i] = this->get(i);
+        }
+        this->clear();
+        for (int i = 0; i < this->_info->lines; i++){
+            if (i == index ){
+                for (int c = 0; c < count; c++){
+                    this->add(data); // add data
+                } 
+            }
+            this->add(_fdata[i]);
+        }
+        delete[] _fdata;
+        this->_info->lines++;
+        this->_info->size = resize(); // get new size from bites of file 
+        return 0;
+    }
+    catch (int result){
+		return result;
+	}
 }
