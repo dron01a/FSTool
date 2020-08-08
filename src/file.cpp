@@ -259,3 +259,56 @@ void FSTool::file::clear(){
     this->_info->size = 0;
     delete temp;
 }
+
+int FSTool::file::rename_file(std::string new_name){
+    if (!this->exists()){
+        return 1; // if file not exists 
+    }
+    rename(this->_info->full_name.c_str(), (this->_info->path + new_name).c_str());
+    this->_info->name = new_name;
+    this->_info->full_name = this->_info->path + new_name;
+    return 0;
+}
+
+void FSTool::file::copy(file &source){
+    std::ifstream *in; // temp input
+    in->open(source.get_info().full_name,std::ios_base::in |  std::ios_base::binary);
+	std::ofstream *out; // temp output
+    out->open(this->_info->full_name, std::ios_base::out | std::ios_base::binary);
+	char buf[source.get_info().size];
+	do {
+		in->read(&buf[0], source.get_info().size);   
+		out->write(&buf[0], in->gcount()); 
+	} while (in->gcount() > 0);     
+	in->close(); // close streams 
+	out->close();
+    delete in;
+    delete out;
+}
+
+void FSTool::file::copy(std::string name){
+    std::ifstream *in; // temp input
+    in->open(name,std::ios_base::in |  std::ios_base::binary);
+	std::ofstream *out; // temp output
+    out->open(this->_info->full_name, std::ios_base::out | std::ios_base::binary);
+    int * sz = new int(in->gcount());
+	char buf[in->gcount()];
+	do {
+		in->read(&buf[0], *sz);   
+		out->write(&buf[0], in->gcount()); 
+	} while (in->gcount() > 0);     
+	in->close(); // close streams 
+	out->close();
+    delete in;
+    delete out;
+    delete sz;
+}
+
+void FSTool::file::move(std::string path){
+    FSTool::file * temp;  // temp file object
+    temp = new FSTool::file(this->_info->name, path);
+    temp->copy(*this);
+    this->destroy();
+    this->_info->path = path;
+    
+}

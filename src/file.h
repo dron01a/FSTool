@@ -41,10 +41,11 @@ namespace FSTool {
         int add(std::string data, int index);    // redact data in line
         int insert(std::string data, int index); // insert
         int insert(std::string data, int index, int count);
-        void clear();                           //deletes all data from the file
-        void rename_file(std::string new_name); //change name of file
-        void copy(file &obj);                   //clone data in other file
-        void move(std::string path);            //moves a file to the specified folder
+        void clear();                           // deletes all data from the file
+        int rename_file(std::string new_name);  // change name of file
+        void copy(file &obj);                   // clone data in other file
+        void copy(std::string name);            // clone data in other file
+        void move(std::string path);            // moves a file to the specified folder
     };
 
     // function return information of file
