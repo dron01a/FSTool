@@ -37,6 +37,10 @@ FSTool::_finfo FSTool::file_information(std::string file_name){
     return _finfo(file_name);// return struct
 }  
 
+FSTool::file::file(std::string name){
+    _info = new _finfo(name);
+}
+
 FSTool::file::file(std::string name, std::string path){
     std::string *temp_path = new std::string(path); // temporary strings
     std::string *temp_name = new std::string(name); // to path, name and full name
@@ -318,4 +322,25 @@ void FSTool::file::move(std::string path){
     this->_info->path = path;
     this->_info->full_name = temp->get_info().full_name;
     delete temp;
+}
+
+int FSTool::find(std::string file_name, int begin, int end, std::string object){
+    static int _find;
+    std::string _object;
+    if( _object != object ){
+        _find = 0;
+        _object = object;
+    }
+    try {
+        if (begin > end){
+            return -1;
+        }
+        if (begin == end ){
+            return FSTool::file()
+        }
+        for (int i = begin;i < end;i++){}
+    }
+    catch(int error){
+        return error;
+    }
 }
