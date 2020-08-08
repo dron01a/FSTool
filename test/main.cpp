@@ -5,26 +5,18 @@
 using namespace FSTool;
 
 int main(){
-    file a("12.txt", ".");
+    file a("3.txt", "./1");
 
     if(!a.exists()){
         std::cout << "нету\n";
     }
 
-    std::cout << a.destroy() << "\n";
-    std::cout << a.create() << "\n";
+    a.create();
 
-    // std::cout << a.add("жопа") << "\n";
+    a.copy("./1/1");
 
-    // std::cout << a.add("жопа", 21) << "\n";
+    a.move("./2/");
 
-    std::cout << a.add("жопа") << "\n";
-
-    //std::cout << a.get(0) << "\n";
-
-    std::cout << a.add("жопа") << "\n";
-
-    std::cout << a.insert("_+_+_+_жопа", 1, 2) << "\n";
 
     return 0;
 }

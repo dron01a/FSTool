@@ -54,13 +54,13 @@ FSTool::file::file(std::string name, std::string path){
 		*temp_fullname = path + name;
 	} 
     delete temp_path; // free memory
-    delete temp_path;
+    delete temp_name;
     _info = new _finfo(*temp_fullname); // full information struct
     delete temp_fullname; 
 }
 
 FSTool::file::~file(){
-    delete _info;
+    //delete _info;
 }
 
 bool FSTool::file::exists(){
@@ -97,6 +97,7 @@ int FSTool::file::create(){
     else{
         temp->close(); // close stream
         delete temp;   // free memory
+        this->_info = new _finfo(this->_info->full_name); // full information struct
         return 0;      // return code 
     }
 }
@@ -264,51 +265,57 @@ int FSTool::file::rename_file(std::string new_name){
     if (!this->exists()){
         return 1; // if file not exists 
     }
-    rename(this->_info->full_name.c_str(), (this->_info->path + new_name).c_str());
+    std::string * temp_fullname = new std::string; // temp string 
+#ifdef unix 
+	if(_info->path[_info->path.length() -1] != '/'){
+		*temp_fullname = _info->path + '/' + new_name;
+#elif defined(WIN32)
+    if(path[path.length() -1] != '\\'){
+        *temp_fullname = _info->path + '\\' + new_name;		
+#endif
+    }
+    else{
+        *temp_fullname = this->_info->path + new_name;
+    }
+    rename(this->_info->full_name.c_str(), temp_fullname->c_str());
     this->_info->name = new_name;
-    this->_info->full_name = this->_info->path + new_name;
+    this->_info->full_name = *temp_fullname;
+    delete temp_fullname;
     return 0;
 }
 
 void FSTool::file::copy(file &source){
-    std::ifstream *in; // temp input
-    in->open(source.get_info().full_name,std::ios_base::in |  std::ios_base::binary);
-	std::ofstream *out; // temp output
-    out->open(this->_info->full_name, std::ios_base::out | std::ios_base::binary);
-	char buf[source.get_info().size];
-	do {
-		in->read(&buf[0], source.get_info().size);   
-		out->write(&buf[0], in->gcount()); 
-	} while (in->gcount() > 0);     
-	in->close(); // close streams 
+    std::ifstream *src; // temp input
+    std::ofstream *out; // temp output
+    src = new std::ifstream(source.get_info().full_name, std::ios::binary); // open input file
+    out = new std::ofstream(this->_info->full_name, std::ios::binary); // open source file 
+    *out << src->rdbuf(); // write data
+    src->close(); // close streams 
 	out->close();
-    delete in;
+    delete src; // free memory
     delete out;
 }
 
 void FSTool::file::copy(std::string name){
-    std::ifstream *in; // temp input
-    in->open(name,std::ios_base::in |  std::ios_base::binary);
-	std::ofstream *out; // temp output
-    out->open(this->_info->full_name, std::ios_base::out | std::ios_base::binary);
-    int * sz = new int(in->gcount());
-	char buf[in->gcount()];
-	do {
-		in->read(&buf[0], *sz);   
-		out->write(&buf[0], in->gcount()); 
-	} while (in->gcount() > 0);     
-	in->close(); // close streams 
+    std::ifstream *src; // temp input
+    std::ofstream *out; // temp output
+    src = new std::ifstream(name, std::ios::binary); // open input file
+    out = new std::ofstream(this->_info->full_name, std::ios::binary); // open source file 
+    *out << src->rdbuf(); // write data
+    src->close(); // close streams 
 	out->close();
-    delete in;
+    delete src; // free memory
     delete out;
-    delete sz;
 }
 
 void FSTool::file::move(std::string path){
-    FSTool::file * temp;  // temp file object
-    temp = new FSTool::file(this->_info->name, path);
-    temp->copy(*this);
-    this->destroy();
+    FSTool::file * temp = new FSTool::file(this->_info->name, path);  // temp file object
+    if(!temp->exists()){
+        temp->create();
+    }
+    temp->copy(this->_info->full_name); // clone file   
+    this->destroy(); // delete file 
     this->_info->path = path;
-    
+    this->_info->full_name = temp->get_info().full_name;
+    delete temp;
 }
