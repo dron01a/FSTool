@@ -27,8 +27,8 @@ namespace FSTool {
         _finfo *_info = nullptr;  // struct with info
         int resize();   // return file size
     public:
-        file(std::string name);
         file(std::string name, std::string path); // construcnor
+        file(std::string name);
         ~file();
         bool exists();                           // checks the file for existence
         int create();                            // create file in directory
@@ -54,7 +54,6 @@ namespace FSTool {
 
     // functions find object in file
     int find(std::string file_name, int begin, int end, std::string object);
-    int find(std::string file_name, std::string begin, std::string end, std::string object);
     int find(std::string file_name, std::string object);
 
 };

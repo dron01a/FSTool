@@ -5,18 +5,19 @@
 using namespace FSTool;
 
 int main(){
-    file a("3.txt", "./1");
+    file a("3.txt", ".");
 
     if(!a.exists()){
         std::cout << "нету\n";
     }
 
-    a.create();
+    std::cout << find("./2/3.txt",0,5,"жопа") << std::endl;
 
-    a.copy("./1/1");
+    std::cout << find("./2/3.txt",0,5,"жопа") << std::endl;
 
-    a.move("./2/");
+    std::cout << find("./2/3.txt",0,5,"жопа") << std::endl;
 
+    std::cout << find("./2/3.txt",0,5,"жопа") << std::endl;
 
     return 0;
 }

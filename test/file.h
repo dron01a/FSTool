@@ -28,6 +28,7 @@ namespace FSTool {
         int resize();   // return file size
     public:
         file(std::string name, std::string path); // construcnor
+        file(std::string name);
         ~file();
         bool exists();                           // checks the file for existence
         int create();                            // create file in directory
