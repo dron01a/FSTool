@@ -24,12 +24,12 @@ int main(void){
 ________________
 Output:
 
-12.txt\n
-.\n
-./12\n
-12\n
-133\n
-1595497344\n
+12.txt <br>
+. <br>
+./12 <br>
+12 <br>
+133 <br>
+1595497344 <br>
 ________________
 
 
@@ -53,8 +53,8 @@ int main(void){
 ________________
 test.txt 
 
-string 0\n
-string 2\n
+string 0 <br>
+string 2 <br>
 
 ________________
 
