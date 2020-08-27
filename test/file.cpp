@@ -30,11 +30,8 @@ FSTool::_finfo::_finfo(std::string full_name){
     obj->close(); // close file
     delete buf;
     delete obj;
-    time_t now = time(0);
-    tm *ltm = localtime(&now);
-    printf("%i\n", ltm->tm_year + 1970);
     tm * temp_time = gmtime(&data.st_mtime);
-    this->lm_year = temp_time->tm_year + 1970;
+    this->lm_year = temp_time->tm_year + 1900;
     this->lm_month = temp_time->tm_mon + 1;
     this->lm_day = temp_time->tm_mday;
     this->lm_hour = temp_time->tm_hour;
@@ -336,7 +333,7 @@ void FSTool::file::move(std::string path){
 int FSTool::find(std::string file_name, int begin, int end, std::string object){
     static int _find;
     static int _b; // begin
-    static int _e; // end
+    static int _e; // end   
     static std::string _object;
     static std::string _name; // name jf file 
     if( _object != object || _name != file_name || begin != _b || end != _e){
