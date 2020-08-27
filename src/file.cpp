@@ -30,7 +30,21 @@ FSTool::_finfo::_finfo(std::string full_name){
     obj->close(); // close file
     delete buf;
     delete obj;
-    this->last_modification = data.st_mtime;
+    //time_t * tme = data.st_mtime;
+    //const time_t timer = time(data.st_mtime);
+    printf("fdfd\n");
+    tm * temp_time = gmtime(&(data.st_mtime));
+    printf("fdfd\n");
+    this->lm_year = temp_time->tm_year;
+    this->lm_month = temp_time->tm_mon;
+    this->lm_day = temp_time->tm_mday;
+    this->lm_hour = temp_time->tm_hour;
+    this->lm_min = temp_time->tm_min;
+    this->lm_sec = temp_time->tm_sec;
+    printf("fdfd\n");
+    delete temp_time;
+    printf("fdfd\n");
+    //this->last_modification = data.st_mtime;
 }
 
 FSTool::_finfo FSTool::file_information(std::string file_name){

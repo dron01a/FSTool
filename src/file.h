@@ -4,21 +4,26 @@
 #include "FSTbase.h"
 
 #include "sys/stat.h"
+#include "ctime"
 #include <fstream>
 
 namespace FSTool {
 
     //struct with information of file
     struct _finfo{
-        _finfo(std::string full_name);  // constructor
-        std::string type;               // returns the file type depending on the extension
-        std::string name;               // name of file system element
-        std::string path;               // path to file system element
-        std::string full_name;          // name of file with path
-        int size = 0;                   // size of file system element in byte
-        int lines = 0;                  // get count strings in file
-        time_t last_modification;       // time of last modification
-        // time_t create_time;             // time of create file
+        _finfo(std::string full_name); // constructor
+        std::string type;              // returns the file type depending on the extension
+        std::string name;              // name of file system element
+        std::string path;              // path to file system element
+        std::string full_name;         // name of file with path
+        int size = 0;                  // size of file system element in byte
+        int lines = 0;                 // get count strings in file
+        int lm_year = 0;               // year of last modification
+        int lm_month = 0;              // month of last modification
+        int lm_day = 0;                // day of last modification
+        int lm_hour = 0;               // hour of last modification
+        int lm_min = 0;                // min of last modification
+        int lm_sec = 0;                // sec of last modification
     };
 
     // class for work with files

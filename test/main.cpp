@@ -11,13 +11,15 @@ int main(){
         std::cout << "нету\n";
     }
 
-    std::cout << find("./2/3.txt",0,5,"жопа") << std::endl;
+    a.create();
 
-    std::cout << find("./2/3.txt",0,5,"жопа") << std::endl;
+    std::cout << a.get_info().lm_year << std::endl;
 
-    std::cout << find("./2/3.txt",0,5,"жопа") << std::endl;
+    std::cout << a.get_info().lm_month << std::endl;
 
-    std::cout << find("./2/3.txt",0,5,"жопа") << std::endl;
+    std::cout << a.get_info().lm_day << std::endl;
+
+    std::cout << a.get_info().lm_hour << std::endl;
 
     return 0;
 }

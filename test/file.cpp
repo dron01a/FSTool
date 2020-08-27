@@ -30,7 +30,16 @@ FSTool::_finfo::_finfo(std::string full_name){
     obj->close(); // close file
     delete buf;
     delete obj;
-    this->last_modification = data.st_mtime;
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+    printf("%i\n", ltm->tm_year + 1970);
+    tm * temp_time = gmtime(&data.st_mtime);
+    this->lm_year = temp_time->tm_year + 1970;
+    this->lm_month = temp_time->tm_mon + 1;
+    this->lm_day = temp_time->tm_mday;
+    this->lm_hour = temp_time->tm_hour;
+    this->lm_min = temp_time->tm_min;
+    this->lm_sec = temp_time->tm_sec;
 }
 
 FSTool::_finfo FSTool::file_information(std::string file_name){
@@ -362,6 +371,35 @@ int FSTool::find(std::string file_name, int begin, int end, std::string object){
         _name = "";
         _b = 0;
         _e = 0;
+        delete temp;
+        throw -1; // if not find
+    }
+    catch(int error){
+        return error;
+    }
+}
+
+int FSTool::find(std::string file_name, std::string object){
+    static int _find;
+    static std::string _object;
+    static std::string _name; // name jf file 
+    if( _object != object || _name != file_name){
+        _find = 0; // update data
+        _object = object;
+        _name = file_name;
+    }
+    try {
+        FSTool::file* temp = new FSTool::file(file_name); // temp object
+        for (int i = _find;i < temp->get_info().size;i++){
+            if((temp->get(i).find(object)!=std::string::npos)){
+                 delete temp; // free memory
+                _find = i + 1; // save point
+                return i;
+            }
+        }
+        _find = 0; // update data
+        _object = "";
+        _name = "";
         delete temp;
         throw -1; // if not find
     }

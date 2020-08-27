@@ -290,6 +290,8 @@ ClientBin /
 * .publishsettings
 orleans.codegen.cs
 
+.vscode
+
 # Включение файлов строгих имен может представлять угрозу безопасности
 # (https://github.com/github/gitignore/pull/2483#issue-259490424)
 # *. SNK
