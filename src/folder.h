@@ -2,6 +2,15 @@
 #define __FOLDER__H__
 
 #include "FSTbase.h"
+#ifdef unix // for unix 
+#include "string.h"
+#include <unistd.h>
+#include "dirent.h"
+#elif defined(WIN32) // for windows
+#include "direct.h"
+#include "io.h"
+#include "dos.h"
+#endif
 
 namespace FSTool{
 
@@ -22,6 +31,9 @@ namespace FSTool{
         int lm_min = 0;                  // min of last modification
         int lm_sec = 0;                  // sec of last modification
     };
+
+    // function return information of folder
+    _dirinfo dir_information(std::string full_name);
 
     // class for work with files
     class folder{

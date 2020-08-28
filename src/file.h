@@ -2,9 +2,6 @@
 #define __FILE__H__
 
 #include "FSTbase.h"
-
-#include "sys/stat.h"
-#include "ctime"
 #include <fstream>
 
 namespace FSTool {

@@ -2,6 +2,8 @@
 #define __FSO__BASE__H__
 
 #include <string>
+#include "sys/stat.h"
+#include <sys/types.h>
 
 namespace FSTool {
     template < class structTYPE > 
