@@ -30,6 +30,7 @@ namespace FSTool{
         int lm_hour = 0;                 // hour of last modification
         int lm_min = 0;                  // min of last modification
         int lm_sec = 0;                  // sec of last modification
+        int length = 0;                  // count of elements in maindir
     };
 
     // function return information of folder

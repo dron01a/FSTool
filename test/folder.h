@@ -30,14 +30,28 @@ namespace FSTool{
         int lm_hour = 0;                 // hour of last modification
         int lm_min = 0;                  // min of last modification
         int lm_sec = 0;                  // sec of last modification
+        int length = 0;                  // count of elements in maindir
     };
 
     // function return information of folder
     _dirinfo dir_information(std::string full_name);
 
     // class for work with files
-    class folder{
-
+    class folder : public _base<_dirinfo>{
+    private:
+        _dirinfo *_info = nullptr; // struct with info
+    public:
+        folder(std::string name, std::string path); // construcnor
+        folder(std::string name);
+        ~folder();
+        bool exists();                           // checks the folder for existence
+        int create();                            // create folder in directory
+        int destroy(char mode);                  // delete folder
+        bool empty();                            // if folder empty
+        _dirinfo get_info();                     // return information of folder
+        std::string get(int index);              // return name of element in folder from index
+        std::string back();                      // return last element
+        bool range(int index);                   // check index
     };
 
 };

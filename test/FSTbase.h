@@ -15,7 +15,7 @@ namespace FSTool {
         virtual structTYPE get_info() = 0;      // return struct with information
         virtual std::string get(int index) = 0; // get data fov index file system element
         virtual std::string back() = 0;         // return last element
-        virtual bool range(int index) = 0;      // check index
+       // virtual bool range(int index) = 0;      // check index
 
         //return first element 
         std::string front(){ 

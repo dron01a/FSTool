@@ -6,7 +6,12 @@ using namespace FSTool;
 
 int main(){
     
-    std::cout << dir_information("./test").folders << std::endl; 
+    folder test("./test");
+
+
+    for(int i = 0;i != test.get_info().length; i++ ){
+        std::cout << test.get(i) << std::endl;
+    }
 
     return 0;
 }
