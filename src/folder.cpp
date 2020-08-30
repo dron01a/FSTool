@@ -34,15 +34,18 @@ FSTool::_dirinfo::_dirinfo(std::string full_name){
  DIR *dir = opendir(this->full_name.c_str());
 	struct dirent *ent;
     struct stat data;
+    stat(full_name.c_str(),&data);
     while((ent = readdir(dir)) != NULL){
-		if ( strcmp( ".", ent->d_name ) == 0 || strcmp( "..", ent->d_name ) == 0 )
-			continue;
-		if(ent->d_type == DT_DIR){
-			this->size += dir_information(full_name).size;
+	    if(ent->d_type == DT_DIR){
+            if ( strcmp( ".", ent->d_name ) == 0 || strcmp( "..", ent->d_name ) == 0 ){
+			    continue;
+            }
+			this->size += dir_information( ent->d_name).size;
             this->folders++;
-            this->folders += dir_information(full_name).folders;
-            this->files += dir_information(full_name).files;
-		}else {
+            this->folders += dir_information(ent->d_name).folders;
+            this->files += dir_information(ent->d_name).files;
+		}
+        if(ent->d_type == DT_REG){
 			stat(ent->d_name,&data);
             this->files++;
 		    this->size += data.st_size;
@@ -56,3 +59,30 @@ FSTool::_dirinfo::_dirinfo(std::string full_name){
 FSTool::_dirinfo FSTool::dir_information(std::string file_name){
     return _dirinfo(file_name);// return struct
 }  
+
+FSTool::folder::folder(std::string name, std::string path){
+    std::string *temp_path = new std::string(path); // temporary strings
+    std::string *temp_name = new std::string(name); // to path, name and full name
+    std::string *temp_fullname = new std::string;
+#ifdef unix 
+	if(path[path.length() -1] != '/'){
+		*temp_fullname = path + '/' + name;
+		*temp_path += '/'; // redact str
+#elif defined(WIN32)
+    if(path[path.length() -1] != '\\'){
+		*temp_fullname = path + '\\' + name;
+		*temp_path += '\\';
+#endif
+	}else{
+		*temp_fullname = path + name;
+	} 
+    delete temp_path; // free memory
+    delete temp_name;
+    _info = new _dirinfo(*temp_fullname); // full information struct
+    delete temp_fullname; 
+}
+
+FSTool::folder::folder(std::string name){
+    _info = new _dirinfo(name); // full struct
+}
+
