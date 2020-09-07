@@ -404,3 +404,30 @@ int FSTool::find(std::string file_name, std::string object){
         return error;
     }
 }
+
+strvect FSTool::file::get_elements_of_path(){
+    strvect elements; 
+    std::string *temp = new std::string;
+    char* token, * next_token = NULL;
+#ifdef WIN32
+    char p[1024];
+	strcpy_s(p, _info->full_name.c_str());
+	token = strtok_s(p, "\\", &next_token);
+    elements.push_back(token);
+	for (int i = 0; token != NULL; token = strtok_s(NULL, "\\", &next_token), i++){
+        *temp = elements[i-1] + "\\" + token;
+#elif defined(unix)
+    char p[_info->full_name.length()];
+    strcpy(p, _info->full_name.c_str());
+    token = strtok(p, "/");
+    elements.push_back(token);
+    for (int i = 1; token != NULL; token = strtok(NULL, "/"), i++){
+        *temp = elements[i-1] + "/" + token;
+#endif
+		elements.push_back(*temp);
+    }
+	delete token; 
+    delete next_token;
+    delete temp;
+    return elements;
+}

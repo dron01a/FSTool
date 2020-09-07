@@ -49,6 +49,7 @@ namespace FSTool {
         void copy(file &obj);                   // clone data in other file
         void copy(std::string name);            // clone data in other file
         void move(std::string path);            // moves a file to the specified folder
+        strvect get_elements_of_path();         // return elements of path
     };
 
     // function return information of file

@@ -2,8 +2,6 @@
 #define __FOLDER__H__
 
 #ifdef unix // for unix 
-
-#include "string.h"
 #include <unistd.h>
 #include "dirent.h"
 #elif defined(WIN32) // for windows
@@ -46,15 +44,15 @@ namespace FSTool{
         folder(std::string name, std::string path); // construcnor
         folder(std::string name);
         ~folder();
-        bool exists();                           // checks the folder for existence
-        int create();                            // create folder in directory
-        int destroy(char mode);                  // delete folder
-        bool empty();                            // if folder empty
-        _dirinfo get_info();                     // return information of folder
-        std::string get(int index);              // return name of element in folder from index
-        std::string back();                      // return last element
-        bool range(int index);                   // check index
-        std::vector<std::string> get_elements_of_path(); // return elements of path 
+        bool exists();                  // checks the folder for existence
+        int create();                   // create folder in directory
+        int destroy(char mode);         // delete folder
+        bool empty();                   // if folder empty
+        _dirinfo get_info();            // return information of folder
+        std::string get(int index);     // return name of element in folder from index
+        std::string back();             // return last element
+        bool range(int index);          // check index
+        strvect get_elements_of_path(); // return elements of path
     };
 
 };

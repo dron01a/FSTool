@@ -12,7 +12,6 @@
 #include "dos.h"
 #endif
 #include "FSTbase.h"
-#include <vector>
 
 namespace FSTool{
 

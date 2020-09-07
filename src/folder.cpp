@@ -151,8 +151,8 @@ std::string FSTool::folder::back(){
 }
 
 
-std::vector<std::string> FSTool::folder::get_elements_of_path(){
-    std::vector<std::string> elements; 
+strvect FSTool::folder::get_elements_of_path(){
+    strvect elements; 
     std::string *temp = new std::string;
     char* token, * next_token = NULL;
 #ifdef WIN32
