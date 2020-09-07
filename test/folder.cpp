@@ -104,6 +104,13 @@ bool FSTool::folder::exists(){
     return true;
 }
 
+bool FSTool::folder::empty(){
+    if(this->_info->length == 2){
+        return true;
+    }
+    return false;
+}
+
 FSTool::_dirinfo FSTool::folder::get_info(){
     return *_info;
 }
@@ -121,8 +128,7 @@ std::string FSTool::folder::get(int index){
 		else{
 			(*inter)++;
         }
-    }
-    result = data.name;
+    }    result = data.name;
 #elif defined(unix)
 	DIR *dir = opendir(this->_info->full_name.c_str());
 	struct dirent *ent;
@@ -143,3 +149,45 @@ std::string FSTool::folder::get(int index){
 std::string FSTool::folder::back(){
     return this->get(this->_info->length);
 }
+
+
+std::vector<std::string> FSTool::folder::get_elements_of_path(){
+    std::vector<std::string> elements; 
+    std::string *temp = new std::string;
+    char* token, * next_token = NULL;
+#ifdef WIN32
+    char p[1024];
+	strcpy_s(p, _info->full_name.c_str());
+	token = strtok_s(p, "\\", &next_token);
+    elements.push_back(token);
+	for (int i = 0; token != NULL; token = strtok_s(NULL, "\\", &next_token), i++){
+        *temp = elements[i-1] + "\\" + token;
+#elif defined(unix)
+    char p[_info->full_name.length()];
+    strcpy(p, _info->full_name.c_str());
+    token = strtok(p, "/");
+    elements.push_back(token);
+    for (int i = 1; token != NULL; token = strtok(NULL, "/"), i++){
+        *temp = elements[i-1] + "/" + token;
+#endif
+		elements.push_back(*temp);
+    }
+	delete token; 
+    delete next_token;
+    delete temp;
+    return elements;
+}
+
+
+int FSTool::folder::create(){
+    std::vector<std::string> path = this->get_elements_of_path();
+	for (int i = 0; i < path.size(); i++) {//create folders
+#ifdef WIN32
+		_mkdir(pats[i].c_str());
+#elif defined(unix)
+        mkdir(path[i].c_str(),0777);
+#endif
+    }
+    return 0;
+} 
+

@@ -1,16 +1,18 @@
 #ifndef __FOLDER__H__
 #define __FOLDER__H__
 
-#include "FSTbase.h"
 #ifdef unix // for unix 
+
 #include "string.h"
 #include <unistd.h>
 #include "dirent.h"
 #elif defined(WIN32) // for windows
 #include "direct.h"
-#include "io.h"
+#include "io.h"dd
 #include "dos.h"
 #endif
+#include "FSTbase.h"
+#include <vector>
 
 namespace FSTool{
 
@@ -52,6 +54,7 @@ namespace FSTool{
         std::string get(int index);              // return name of element in folder from index
         std::string back();                      // return last element
         bool range(int index);                   // check index
+        std::vector<std::string> get_elements_of_path(); // return elements of path 
     };
 
 };
