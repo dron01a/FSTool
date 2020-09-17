@@ -9,7 +9,7 @@ FSTool::_dirinfo::_dirinfo(std::string full_name){
 #ifdef WIN32
 	if (_access(full_name.c_str(), 0))
 #elif defined(unix) 
-    if (access(full_name.c_str(), 0))
+    if (!access(full_name.c_str(), 0))
 #endif
     {
 		return; // if folder exists 
@@ -94,7 +94,7 @@ FSTool::folder::~folder(){
 
 bool FSTool::folder::exists(){
 #ifdef WIN32
-    if (_access(_info->full_name.c_str(), 0))
+    if (!_access(_info->full_name.c_str(), 0))
 #elif defined(unix)
     if (access(_info->full_name.c_str(), 0))
 #endif
@@ -191,3 +191,52 @@ int FSTool::folder::create(){
     return 0;
 } 
 
+bool FSTool::folder::range(int index){
+    if(index > this->_info->length || index < 0 ){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+int FSTool::folder::destroy(){
+#ifdef WIN32
+    struct _finddata_t data;
+	intptr_t done = _findfirst(this->full_name.c_str(), &data);
+    this->size += data.size;
+	while (_findnext(done, &data) == 0) {
+        this->length++;
+		if (data.attrib == _A_SUBDIR && this->_elements != 0) {
+			this->size += dir_information(full_name).size;
+            this->folders++;
+            this->folders += dir_information(full_name).folders;
+            this->files += dir_information(full_name).files;
+		}else{
+            this->files++;
+            this->size += data.size;
+        }
+	}
+	_findclose(done);
+#elif defined (unix)
+    DIR *dir = opendir(this->_info->full_name.c_str());
+	struct dirent *ent;
+    while((ent = readdir(dir)) != NULL){
+	    if(ent->d_type == DT_DIR){
+            if ( strcmp( ".", ent->d_name ) == 0 || strcmp( "..", ent->d_name ) == 0 ){
+			    continue;
+            }
+			folder * temp = new folder(std::string(this->_info->full_name+ "/" + ent->d_name).c_str());
+            temp->destroy(); // delete subdir 
+            delete temp; 
+            rmdir(std::string(this->_info->full_name+ "/" + ent->d_name).c_str());
+		}
+        if(ent->d_type == DT_REG){
+			remove(std::string(this->_info->full_name+ "/" + ent->d_name).c_str());
+        }
+	}
+    rmdir(this->_info->full_name.c_str());
+	closedir(dir);
+#endif
+    return 0;
+}

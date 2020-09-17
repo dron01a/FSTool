@@ -46,7 +46,7 @@ namespace FSTool{
         ~folder();
         bool exists();                  // checks the folder for existence
         int create();                   // create folder in directory
-        int destroy(char mode);         // delete folder
+        int destroy();         // delete folder
         bool empty();                   // if folder empty
         _dirinfo get_info();            // return information of folder
         std::string get(int index);     // return name of element in folder from index
