@@ -186,13 +186,16 @@ int FSTool::file::add(std::string data, int index){
             _buff[i] = this->get(i); // load file data to buff 
         }
         _buff[index] = data; // rewrite line 
+        int *lines = new int(this->_info->lines); 
         this->clear(); // delete data in file
-        for(int i = 0; i < this->_info->lines; i++){
+        for(int i = 0; i < *lines; i++){
             this->add(_buff[i]); // load buf to file  
         }
-        delete _buff;
+        delete[] _buff;
+        delete lines;
         this->_info->lines++;
         this->_info->size = resize();  // get new size from bites of file 
+       
         return 0; 
     }
     catch(int error_code){
