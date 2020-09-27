@@ -9,10 +9,10 @@ FSTool::_dirinfo::_dirinfo(std::string full_name){
 #ifdef WIN32
 	if (_access(full_name.c_str(), 0))
 #elif defined(unix) 
-    if (!access(full_name.c_str(), 0))
+    if (access(full_name.c_str(), 0) !=0)
 #endif
     {
-		return; // if folder exists 
+		return; // if folder not exists 
     }
 #ifdef WIN32
     struct _finddata_t data;
@@ -94,12 +94,12 @@ FSTool::folder::~folder(){
 
 bool FSTool::folder::exists(){
 #ifdef WIN32
-    if (!_access(_info->full_name.c_str(), 0))
+    if (_access(_info->full_name.c_str(), 0))
 #elif defined(unix)
-    if (access(_info->full_name.c_str(), 0))
+    if (access(_info->full_name.c_str(), 0) != 0)
 #endif
-    {
-        return false; // if folder exists 
+    {   
+        return false; // if folder not exists 
     }
     return true;
 }
@@ -208,13 +208,15 @@ int FSTool::folder::destroy(){
 	while (_findnext(done, &data) == 0) {
         this->length++;
 		if (data.attrib == _A_SUBDIR && this->_elements != 0) {
-			this->size += dir_information(full_name).size;
-            this->folders++;
-            this->folders += dir_information(full_name).folders;
-            this->files += dir_information(full_name).files;
+			if ( strcmp( ".", ent->d_name ) == 0 || strcmp( "..", ent->d_name ) == 0 ){
+			    continue;
+            }
+			folder * temp = new folder(std::string(this->_info->full_name+ "\\" + ent->d_name).c_str());
+            temp->destroy(); // delete subdir 
+            delete temp; 
+            _rmdir(std::string(this->_info->full_name+ "\\" + ent->d_name).c_str());
 		}else{
-            this->files++;
-            this->size += data.size;
+            remove(std::string(this->_info->full_name+ "\\" + ent->d_name).c_str());
         }
 	}
 	_findclose(done);
@@ -235,8 +237,16 @@ int FSTool::folder::destroy(){
 			remove(std::string(this->_info->full_name+ "/" + ent->d_name).c_str());
         }
 	}
+    closedir(dir);
     rmdir(this->_info->full_name.c_str());
-	closedir(dir);
+	
 #endif
     return 0;
+}
+
+void FSTool::folder::update(){
+    std::string * temp_name = new std::string(this->_info->full_name);
+    delete _info;
+    _info = new _dirinfo(*temp_name);
+    delete temp_name;
 }

@@ -29,12 +29,14 @@ namespace FSTool {
     //base class for folder and file
     template <class structTYPE> class _base{ 
     public:
+
         //virtual functions
         virtual structTYPE get_info() = 0;          // return struct with information
         virtual std::string get(int index) = 0;     // get data fov index file system element
         virtual std::string back() = 0;             // return last element
         virtual bool range(int index) = 0;          // check index
         virtual strvect get_elements_of_path() = 0; // return elements of path
+        virtual void update() = 0;                  // update inkformation of object 
 
         //return first element 
         std::string front(){ 

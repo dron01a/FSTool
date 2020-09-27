@@ -43,6 +43,7 @@ namespace FSTool{
         std::string back();             // return last element
         bool range(int index);          // check index
         strvect get_elements_of_path(); // return elements of path
+        void update();                  // update information of folder
     };
 
 };
