@@ -13,7 +13,7 @@ namespace FSTool {
     };
 
     // class for work with files
-    class file : public _base<_finfo> {
+    class file : public _base {
     private:
         _finfo *_info = nullptr;  // struct with info
         int resize();   // return file size
@@ -39,7 +39,6 @@ namespace FSTool {
         void copy(std::string name);             // clone data in other file
         void move(std::string path);             // moves a file to the specified folder
         strvect get_elements_of_path();          // return elements of path
-        void update();                           // update information of file 
     };
 
     // function return information of file

@@ -434,10 +434,3 @@ strvect FSTool::file::get_elements_of_path(){
     delete temp;
     return elements;
 }
-
-void FSTool::file::update(){
-    std::string * temp_name = new std::string(this->_info->full_name);
-    delete _info;
-    _info = new _finfo(*temp_name);
-    delete temp_name;
-}

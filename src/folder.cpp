@@ -42,13 +42,13 @@ FSTool::_dirinfo::_dirinfo(std::string full_name){
             if ( strcmp( ".", ent->d_name ) == 0 || strcmp( "..", ent->d_name ) == 0 ){
 			    continue;
             }
-			this->size += dir_information( ent->d_name).size;
+			this->size += dir_information((full_name + "/" + ent->d_name).c_str()).size;
             this->folders++;
-            this->folders += dir_information(ent->d_name).folders;
-            this->files += dir_information(ent->d_name).files;
+            this->folders += dir_information((full_name + "/" + ent->d_name).c_str()).folders;
+            this->files += dir_information((full_name + "/" + ent->d_name).c_str()).files;
 		}
         if(ent->d_type == DT_REG){
-			stat(ent->d_name,&data);
+			stat((full_name + "/" + ent->d_name).c_str(),&data);
             this->files++;
 		    this->size += data.st_size;
         }
@@ -96,7 +96,7 @@ bool FSTool::folder::exists(){
 #ifdef WIN32
     if (_access(_info->full_name.c_str(), 0))
 #elif defined(unix)
-    if (access(_info->full_name.c_str(), 0) != 0)
+    if (access(_info->full_name.c_str(), 0))
 #endif
     {   
         return false; // if folder not exists 
@@ -154,26 +154,33 @@ std::string FSTool::folder::back(){
 strvect FSTool::folder::get_elements_of_path(){
     strvect elements; 
     std::string *temp = new std::string;
-    char* token, * next_token = NULL;
+    char* token = NULL;
 #ifdef WIN32
-    char p[1024];
-	strcpy_s(p, _info->full_name.c_str());
-	token = strtok_s(p, "\\", &next_token);
+    char * next_token = NULL;
+    char buff[1024];
+	strcpy_s(buff, _info->full_name.c_str());
+	token = strtok_s(buff, "\\", &next_token);
     elements.push_back(token);
-	for (int i = 0; token != NULL; token = strtok_s(NULL, "\\", &next_token), i++){
-        *temp = elements[i-1] + "\\" + token;
-#elif defined(unix)
-    char p[_info->full_name.length()];
-    strcpy(p, _info->full_name.c_str());
-    token = strtok(p, "/");
-    elements.push_back(token);
-    for (int i = 1; token != NULL; token = strtok(NULL, "/"), i++){
+    token = strtok(NULL,"/",&next_token);
+    for(int i = 1;token != NULL; i++){
         *temp = elements[i-1] + "/" + token;
-#endif
-		elements.push_back(*temp);
+        elements.push_back(*temp);
+        token = strtok(NULL,"/",*next_token);
     }
-	delete token; 
     delete next_token;
+#elif defined(unix)
+    char buff[_info->full_name.length()];
+    strcpy(buff, _info->full_name.c_str());
+    token = strtok(buff,"/");
+    elements.push_back(token);
+    token = strtok(NULL,"/");
+    for(int i = 1;token != NULL; i++){
+        *temp = elements[i-1] + "/" + token;
+        elements.push_back(*temp);
+        token = strtok(NULL,"/");
+    }
+#endif
+	delete token; 
     delete temp;
     return elements;
 }
@@ -238,15 +245,7 @@ int FSTool::folder::destroy(){
         }
 	}
     closedir(dir);
-    rmdir(this->_info->full_name.c_str());
-	
+    rmdir(this->_info->full_name.c_str());	
 #endif
     return 0;
-}
-
-void FSTool::folder::update(){
-    std::string * temp_name = new std::string(this->_info->full_name);
-    delete _info;
-    _info = new _dirinfo(*temp_name);
-    delete temp_name;
 }
