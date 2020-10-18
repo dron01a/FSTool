@@ -408,7 +408,7 @@ int FSTool::find(std::string file_name, std::string object){
     }
 }
 
-strvect FSTool::file::get_elements_of_path(){
+FSTool::strvect FSTool::file::get_elements_of_path(){
     strvect elements; 
     std::string *temp = new std::string;
     char* token, * next_token = NULL;

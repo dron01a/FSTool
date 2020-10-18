@@ -151,7 +151,7 @@ std::string FSTool::folder::back(){
 }
 
 
-strvect FSTool::folder::get_elements_of_path(){
+FSTool::strvect FSTool::folder::get_elements_of_path(){
     strvect elements; 
     std::string *temp = new std::string;
     char* token = NULL;
@@ -248,4 +248,12 @@ int FSTool::folder::destroy(){
     rmdir(this->_info->full_name.c_str());	
 #endif
     return 0;
+}
+
+FSTool::strvect FSTool::folder::get_content_list(){
+    strvect result;
+    for(int i = 0; i < this->_info->length; i++){
+        result.push_back(this->get(i));
+    }
+    return result;
 }

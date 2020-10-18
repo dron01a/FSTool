@@ -7,10 +7,11 @@
 #include <vector>
 #include "string.h"
 
-typedef std::vector<std::string> strvect;
 
 namespace FSTool {
 
+    typedef std::vector<std::string> strvect;
+    
     //base struct for folder and file info
     struct _baseINFO{
         std::string type;      // returns the file type depending on the extension
