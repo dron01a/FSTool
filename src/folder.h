@@ -44,6 +44,7 @@ namespace FSTool{
         bool range(int index);          // check index
         strvect get_elements_of_path(); // return elements of path
         strvect get_content_list();     // return file`s name`s 
+        void move (std::string path);   // move file to dir 
     };
 
 };

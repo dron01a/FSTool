@@ -257,3 +257,25 @@ FSTool::strvect FSTool::folder::get_content_list(){
     }
     return result;
 }
+
+void FSTool::folder::move(std::string path){
+    folder * temp = new folder(path);
+    if(!temp->exists()){
+        temp->create();
+    }
+    delete temp;
+    std::string * src;
+    src = new std::string(this->_info->full_name);
+    std::string * new_pl;
+    if(path[path.length()-1] != '/'){
+        new_pl = new std::string(path + "/" + this->_info->name);
+        this->_info->path = path + "/";
+    }else{
+        new_pl = new std::string(path + this->_info->name);
+        this->_info->path = path;
+    }
+	rename(src->c_str(), new_pl->c_str());
+    this->_info->full_name = *new_pl;
+    delete new_pl;
+    delete src;
+}
