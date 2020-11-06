@@ -7,7 +7,6 @@ FSTool::_finfo::_finfo(std::string full_name){
         obj->close();
         return;
     }
-    obj->open(this->full_name, std::fstream::out | std::fstream::in | std::fstream::binary);
     int *find = new int(this->full_name.find_last_of("/\\")); // split into file name and path
     this->path = this->full_name.substr(0, *find);            // set path
     this->name = this->full_name.substr(*find + 1);           // set file name
@@ -98,17 +97,22 @@ int FSTool::file::resize(){
 }
 
 int FSTool::file::create(){
-    std::ofstream *temp = new std::ofstream(this->_info->full_name, std::fstream::binary); // create temp object
-    if (!temp->is_open()){
-        temp->close(); // close stream
-        delete temp;   // free memory
-        return 1;      // return code 
+    if(this->exists()){
+        std::ofstream *temp = new std::ofstream(this->_info->full_name, std::fstream::binary); // create temp object
+        if (!temp->is_open()){
+            temp->close(); // close stream
+            delete temp;   // free memory
+            return 1;      // return code
+        }
+        else{
+            temp->close();                                    // close stream
+            this->_info = new _finfo(this->_info->full_name); // full information struct
+            delete temp;                                      // free memory
+            return 0;                                         // return code
+        }
     }
     else{
-        temp->close(); // close stream
-        delete temp;   // free memory
-        this->_info = new _finfo(this->_info->full_name); // full information struct
-        return 0;      // return code 
+        return -1;
     }
 }
 
@@ -120,12 +124,7 @@ int FSTool::file::destroy(){
 }
 
 bool FSTool::file::empty(){
-    if((this->_info->size == 0) && (this->_info->lines == 0)){
-        return true; // if file empty 
-    }
-    else{
-        return false;
-    } 
+    return (this->_info->size == 0) && (this->_info->lines == 0); 
 }
 
 FSTool::_finfo FSTool::file::get_info(){

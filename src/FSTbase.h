@@ -40,7 +40,7 @@ namespace FSTool {
         virtual int create() = 0;                   // create file in directory
         virtual int destroy() = 0;                  // delete file
         virtual bool empty() = 0;                   // if file empty
-        virtual void move(std::string path);        // move object to path 
+        virtual void move(std::string path) = 0;    // move object to path 
 
         //return first element 
         std::string front(){ 
