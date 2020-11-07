@@ -97,7 +97,7 @@ int FSTool::file::resize(){
 }
 
 int FSTool::file::create(){
-    if(this->exists()){
+    if(!this->exists()){
         std::ofstream *temp = new std::ofstream(this->_info->full_name, std::fstream::binary); // create temp object
         if (!temp->is_open()){
             temp->close(); // close stream
