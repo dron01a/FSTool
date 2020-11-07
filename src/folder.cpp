@@ -279,3 +279,44 @@ void FSTool::folder::move(std::string path){
     delete new_pl;
     delete src;
 }
+
+int FSTool::folder::find(std::string object, int begin, int end){
+    static int _find;
+    static int _begin; // begin position
+    static int _end;   // end position
+    static std::string _object;
+    if (_object != object || begin != _begin || end != _end & 0) {
+        _find = begin; // update data
+        _object = object;
+        _begin = begin;
+        if(end == 0){
+            _end = this->_info->length;
+        }
+        else{
+            _end = end;
+        }
+    }
+    try{
+        if (_begin > _end || _begin & _end < 0){
+            throw 1;
+        }
+        if (_begin == _end){
+            if(this->get(begin).find(object)!=std::string::npos){
+                _find = begin;
+                return begin;
+            }
+        }
+        else{
+            for (int i = _find;i < _end;i++){
+                if((this->get(i).find(object)!=std::string::npos)){
+                    _find = i + 1; // save point
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+    catch(int error){
+        return error;
+    }
+}

@@ -45,6 +45,7 @@ namespace FSTool{
         strvect get_elements_of_path(); // return elements of path
         strvect get_content_list();     // return file`s name`s 
         void move (std::string path);   // move file to dir 
+        int find(std::string object, int begin = 0, int end = 0); // find object in folder
     };
 
 };
