@@ -332,79 +332,56 @@ void FSTool::file::move(std::string path){
     delete temp;
 }
 
-int FSTool::find(std::string file_name, int begin, int end, std::string object){
+int FSTool::file::find(std::string object, int begin, int end){
     static int _find;
-    static int _b; // begin
-    static int _e; // end
+    static int _begin; // begin position
+    static int _end;   // end position
     static std::string _object;
-    static std::string _name; // name jf file 
-    if( _object != object || _name != file_name || begin != _b || end != _e){
+    if (_object != object || begin != _begin || end != _end & 0) {
         _find = begin; // update data
         _object = object;
-        _name = file_name;
-        _b = begin;
-        _e = end;
+        _begin = begin;
+        if(end == 0){
+            _end = this->_info->lines;
+        }
+        else{
+            _end = end;
+        }
     }
-    try {
-        if (begin > end || begin & end < 0){
+    try{
+        if (_begin > _end || _begin & _end < 0){
             throw 1;
         }
-        FSTool::file* temp = new FSTool::file(file_name); // temp object
-        if (begin == end ){
-            if(temp->get(begin).find(object)!=std::string::npos){
-                delete temp; // free memory
+        if (_begin == _end){
+            if(this->get(begin).find(object)!=std::string::npos){
                 _find = begin;
                 return begin;
             }
-            throw -1; // if not find
         }
-        for (int i = _find;i < end;i++){
-            if((temp->get(i).find(object)!=std::string::npos)){
-                 delete temp; // free memory
-                _find = i + 1; // save point
-                return i;
+        else{
+            for (int i = _find;i < _end;i++){
+                if((this->get(i).find(object)!=std::string::npos)){
+                    _find = i + 1; // save point
+                    return i;
+                }
             }
         }
-        _find = 0; // update data
-        _object = "";
-        _name = "";
-        _b = 0;
-        _e = 0;
-        delete temp;
-        throw -1; // if not find
+        return -1;
     }
     catch(int error){
         return error;
     }
 }
 
-int FSTool::find(std::string file_name, std::string object){
-    static int _find;
-    static std::string _object;
+int FSTool::find(std::string file_name, std::string object, int begin, int end){
     static std::string _name; // name jf file 
-    if( _object != object || _name != file_name){
-        _find = 0; // update data
-        _object = object;
+    if(_name != file_name ){
         _name = file_name;
     }
-    try {
-        FSTool::file* temp = new FSTool::file(file_name); // temp object
-        for (int i = _find;i < temp->get_info().size;i++){
-            if((temp->get(i).find(object)!=std::string::npos)){
-                 delete temp; // free memory
-                _find = i + 1; // save point
-                return i;
-            }
-        }
-        _find = 0; // update data
-        _object = "";
-        _name = "";
-        delete temp;
-        throw -1; // if not find
-    }
-    catch(int error){
-        return error;
-    }
+    FSTool::file *temp = new FSTool::file(file_name);
+    int result = temp->find(object,begin,end);
+    delete temp;
+    return result;
 }
 
 FSTool::strvect FSTool::file::get_elements_of_path(){
