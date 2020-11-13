@@ -337,7 +337,7 @@ int FSTool::file::find(std::string object, int begin, int end){
     static int _begin; // begin position
     static int _end;   // end position
     static std::string _object;
-    if (_object != object || begin != _begin || end != _end & 0) {
+    if (_object != object ||begin != _begin & 0 || end != _end & 0) {
         _find = begin; // update data
         _object = object;
         _begin = begin;
@@ -371,17 +371,6 @@ int FSTool::file::find(std::string object, int begin, int end){
     catch(int error){
         return error;
     }
-}
-
-int FSTool::find(std::string file_name, std::string object, int begin, int end){
-    static std::string _name; // name jf file 
-    if(_name != file_name ){
-        _name = file_name;
-    }
-    FSTool::file *temp = new FSTool::file(file_name);
-    int result = temp->find(object,begin,end);
-    delete temp;
-    return result;
 }
 
 FSTool::strvect FSTool::file::get_elements_of_path(){

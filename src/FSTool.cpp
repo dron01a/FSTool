@@ -37,3 +37,20 @@ bool FSTool::is_folder(std::string file_name){
 #endif
     return false;
 }
+
+int FSTool::find(std::string name, std::string object, int begin, int end){
+    static std::string _name; // name of object 
+    if(_name != name ){
+         _name = name;
+    }
+    _base *temp;
+    if(is_file(name)){
+        temp = new file(name);
+    }
+    if(is_folder(name)){
+        temp = new folder(name);
+    }
+    int result = temp->find(object,begin,end);
+    delete temp;
+    return result;
+}

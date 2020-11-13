@@ -45,10 +45,6 @@ namespace FSTool {
     // function return information of file
     _finfo file_information(std::string file_name);
 
-    // functions find object in file
-    int find(std::string file_name, std::string object, int begin = 0, int end = 0);
-    //int find(std::string file_name, std::string object);
-
 };
 
 #endif

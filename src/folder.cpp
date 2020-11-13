@@ -117,7 +117,7 @@ FSTool::_dirinfo FSTool::folder::get_info(){
 
 std::string FSTool::folder::get(int index){
     int* inter = new int(0);
-    std::string result;
+    std::string result = "";
 #ifdef WIN32
 	struct _finddata_t data;
 	intptr_t done = _findfirst(this->_info->full_name.c_str(), &data);
@@ -134,13 +134,13 @@ std::string FSTool::folder::get(int index){
 	struct dirent *ent;
 	while((ent = readdir(dir)) != NULL){
 		if (*inter == index){
+            result = ent->d_name;
             break;
         }
 		else{
 			(*inter)++;
         }
 	}
-    result = ent->d_name;
 #endif
     delete inter;
     return result;
@@ -285,7 +285,7 @@ int FSTool::folder::find(std::string object, int begin, int end){
     static int _begin; // begin position
     static int _end;   // end position
     static std::string _object;
-    if (_object != object || begin != _begin || end != _end & 0) {
+    if (_object != object || begin != _begin & 0 || end != _end & 0) {
         _find = begin; // update data
         _object = object;
         _begin = begin;
@@ -300,12 +300,11 @@ int FSTool::folder::find(std::string object, int begin, int end){
         if (_begin > _end || _begin & _end < 0){
             throw 1;
         }
-        if (_begin == _end){
+        else if (_begin == _end){
             if(this->get(begin).find(object)!=std::string::npos){
-                _find = begin;
                 return begin;
             }
-        }
+        }        
         else{
             for (int i = _find;i < _end;i++){
                 if((this->get(i).find(object)!=std::string::npos)){
