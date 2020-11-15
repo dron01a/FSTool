@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <string>
 #include <vector>
-#include <algorithm> 
+#include <algorithm>
 #include "string.h"
 
 

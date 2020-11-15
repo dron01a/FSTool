@@ -2,6 +2,7 @@
 #define __FILE__H__
 
 #include "FSTbase.h"
+#include "FSexception.h"
 #include <fstream>
 
 namespace FSTool {
