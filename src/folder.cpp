@@ -116,8 +116,14 @@ FSTool::_dirinfo FSTool::folder::get_info(){
 }
 
 std::string FSTool::folder::get(int index){
-    int* inter = new int(0);
-    std::string result = "";
+    if(!this->exists()){
+        throw fs_exception("folder not found", -2); // if file exists
+    }
+    if(index >= _info->length){
+        throw fs_exception("not valid index of element", -32);
+    }
+    int* inter = new int;
+    std::string result;
 #ifdef WIN32
 	struct _finddata_t data;
 	intptr_t done = _findfirst(this->_info->full_name.c_str(), &data);
@@ -187,6 +193,9 @@ FSTool::strvect FSTool::folder::get_elements_of_path(){
 
 
 int FSTool::folder::create(){
+    if(this->exists()){
+        throw fs_exception("folder already exists", -1);
+    }
     std::vector<std::string> path = this->get_elements_of_path();
 	for (int i = 0; i < path.size(); i++) {//create folders
 #ifdef WIN32
@@ -208,6 +217,9 @@ bool FSTool::folder::range(int index){
 }
 
 int FSTool::folder::destroy(){
+    if(!this->exists()){
+        throw fs_exception("folder not found", -2); // if file exists
+    }
 #ifdef WIN32
     struct _finddata_t data;
 	intptr_t done = _findfirst(this->full_name.c_str(), &data);
@@ -251,6 +263,12 @@ int FSTool::folder::destroy(){
 }
 
 FSTool::strvect FSTool::folder::get_content_list(){
+    if(this->empty()){
+        throw fs_exception("folder is empty", -321);
+    }
+    if(!this->exists()){
+        throw fs_exception("folder not found", -2); // if file exists
+    }
     strvect result;
     for(int i = 0; i < this->_info->length; i++){
         result.push_back(this->get(i));
@@ -281,6 +299,9 @@ void FSTool::folder::move(std::string path){
 }
 
 int FSTool::folder::find(std::string object, int begin, int end){
+    if(!this->exists()){
+        throw fs_exception("file not found", -2); // if file exists
+    }
     static int _find;
     static int _begin; // begin position
     static int _end;   // end position
@@ -296,26 +317,22 @@ int FSTool::folder::find(std::string object, int begin, int end){
             _end = end;
         }
     }
-    try{
-        if (_begin > _end || _begin & _end < 0){
-            throw 1;
-        }
-        else if (_begin == _end){
-            if(this->get(begin).find(object)!=std::string::npos){
-                return begin;
-            }
-        }        
-        else{
-            for (int i = _find;i < _end;i++){
-                if((this->get(i).find(object)!=std::string::npos)){
-                    _find = i + 1; // save point
-                    return i;
-                }
-            }
-        }
-        return -1;
+    if (_begin > _end || _begin & _end < 0){
+        throw fs_exception("not valid search point",41);
     }
-    catch(int error){
-        return error;
+    if (_begin == _end){
+        if(this->get(begin).find(object)!=std::string::npos){
+            _find = begin;
+            return begin;
+        }
     }
+    else{
+        for (int i = _find;i < _end;i++){
+            if((this->get(i).find(object)!=std::string::npos)){
+                _find = i + 1; // save point
+                return i;
+            }
+        }
+    }
+    return -1;
 }

@@ -10,6 +10,7 @@
 #include "dos.h"
 #endif
 #include "FSTbase.h"
+#include "FSexception.h"
 #include <vector>
 
 namespace FSTool{
