@@ -132,7 +132,7 @@ std::string FSTool::file::get(int index){
         throw fs_exception("file not found", -2); // if file exists
     }
     if(index >= _info->lines){
-        throw fs_exception("not valid index of line", -31);
+        throw fs_exception("not valid index", -3);
     }
     std::fstream * object = new std::fstream(this->_info->full_name, std::fstream::out | std::fstream::in | std::fstream::binary); 
 	std::string buf; //result
@@ -179,7 +179,7 @@ int FSTool::file::add(std::string data, int index){
         throw fs_exception("file not found", -2); // if file exists
     }
     if(index >= _info->lines){
-        throw fs_exception("not valid index of line", -31);
+        throw fs_exception("not valid index", -3);
     }
     std::string *_buff = new std::string[this->_info->lines]; // temp buffeer
     for(int i = 0; i < this->_info->lines; i++){
@@ -204,7 +204,7 @@ int FSTool::file::insert(std::string data, int index){
         throw fs_exception("file not found", -2); // if file exists
     }
     if(index >= _info->lines){
-        throw fs_exception("not valid index of line", -31);
+        throw fs_exception("not valid index", -3);
     }
     std::string *_fdata = new std::string[this->_info->lines]; //buffer
     for (int i = 0; i < this->_info->lines; i++) { // load data in file to array
@@ -229,8 +229,8 @@ int FSTool::file::insert(std::string data, int index, int count){
     if(!this->exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
-    if(index >= _info->lines){
-        throw fs_exception("not valid index of line", -31);
+    if(index >= _info->lines || index < 0){
+        throw fs_exception("not valid index", -3);
     }
     std::string *_fdata = new std::string[this->_info->lines]; //buffer
     for (int i = 0; i < this->_info->lines; i++) { // load data in file to array
