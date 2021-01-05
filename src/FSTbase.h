@@ -23,22 +23,26 @@ namespace FSTool {
 
     typedef std::vector<std::string> strvect;
 
-    //base class for folder and file
-    class _base{
-    private: 
+    //base class with information
+    class _baseINFO{
+    protected:
 
         // class fields 
-        std::string _name;     // name of file system element
-        std::string _path;     // path to file system element
-        std::string _fullName; // name of file with path
-        int _size = 0;         // size of file system element in byte
-        
+        std::string _name;      // name of file system element
+        std::string _path;      // path to file system element
+        std::string _fullName;  // name of file with path
+        int _size = 0;          // size of file system element in byte
+        tm * _lmTime = nullptr; // time of last modification  
+    
+    };
+
+    //base class for folder and file
+    class _base : protected _baseINFO{
     public:
 
         // class constructor
         _base(std::string name, std::string path); // construcnors
         _base(std::string name);
-        ~_base(); // destructor 
 
         // virtual methods
         virtual std::string get(int index) = 0;     // get data fov index file system element

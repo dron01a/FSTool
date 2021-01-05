@@ -10,13 +10,12 @@ namespace FSTool {
     // class for work with files
     class file : public _base {
     private:
-        int lines = 0; // get count strings in file
-        int resize();  // return file size
+        std::string extension; // file extension
+        int _lines = 0;         // get count strings in file
+        int resize();          // return file size
     public:
         file(std::string name, std::string path); // construcnors
         file(std::string name);
-        ~file();
-        bool exists();                           // checks the file for existence
         int create();                            // create file in directory
         int destroy();                           // delete file
         bool empty();                            // if file empty
@@ -28,7 +27,6 @@ namespace FSTool {
         int insert(std::string data, int index); // insert
         int insert(std::string data, int index, int count);
         void clear();                            // deletes all data from the file
-        int rename_file(std::string new_name);   // change name of file
         void copy(file &obj);                    // clone data in other file
         void copy(std::string name);             // clone data in other file
         strvect get_elements_of_path();          // return elements of path

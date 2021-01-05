@@ -1,84 +1,43 @@
 #include "file.h"
 
-FSTool::_finfo::_finfo(std::string full_name){
-    this->full_name = full_name;
-    std::fstream *obj = new std::fstream(this->full_name);
-    if (!obj->is_open()){
-        obj->close();
-        return;
-    }
-    int *find = new int(this->full_name.find_last_of("/\\")); // split into file name and path
-    this->path = this->full_name.substr(0, *find);            // set path
-    this->name = this->full_name.substr(*find + 1);           // set file name
-    delete find;                                              // free memory
-    int *exp = new int(this->full_name.find_first_of("."));   // find "." to set extension of file
-    this->type = this->full_name.substr(*exp + 1);
-    delete exp;                                               // free memory 
+FSTool::file::file(std::string name) : FSTool::_base(name) {
+    int *found = new int(this->_fullName.find_first_of(".")); // find "." to set extension of file
+    this->extension = this->_fullName.substr(*found + 1, name.size() - *found + 1);
+    delete found; // free memory
+    std::fstream *obj = new std::fstream(this->_fullName);
+    if(obj->is_open()){
+        std::string *buf = new std::string; //temporary string for getline
+        while (getline(*obj, *buf)){
+            this->_lines++;
+        }
+        obj->close(); // close file
+        delete buf;
+        delete obj;
 #ifdef unix
-    struct stat data;
-    stat(this->full_name.c_str(), &data);
+        struct stat data;
+        stat(this->_fullName.c_str(), &data);
 #elif defined(WIN32)
-    struct _stat data;
-    _stat(this->full_name.c_str(), &data);
+        struct _stat data;
+        _stat(this->_fullName.c_str(), &data);
 #endif
-    this->size = data.st_size;
-    std::string *buf = new std::string; //temporary string for getline
-    while (getline(*obj, *buf)){
-        this->lines++;
+        this->_size = data.st_size;
+        this->_lmTime = gmtime(&data.st_mtime); // add time to struct
+        this->_lmTime->tm_mon += 1;             // fix month
+        this->_lmTime->tm_year += 1900;         // fix year
     }
-    obj->close(); // close file
-    delete buf;
-    delete obj;
-    tm * temp_time = gmtime(&data.st_mtime); // add time to struct
-    this->lm_year = temp_time->tm_year + 1900;
-    this->lm_month = temp_time->tm_mon + 1;
-    this->lm_day = temp_time->tm_mday;
-    this->lm_hour = temp_time->tm_hour;
-    this->lm_min = temp_time->tm_min;
-    this->lm_sec = temp_time->tm_sec;
 }
 
-FSTool::_finfo FSTool::file_information(std::string file_name){
-    return _finfo(file_name);// return struct
-}  
-
-FSTool::file::file(std::string name){
-    _info = new _finfo(name);
-}
-
-FSTool::file::file(std::string name, std::string path){
-    std::string *temp_path = new std::string(path); // temporary strings
-    std::string *temp_name = new std::string(name); // to path, name and full name
-    std::string *temp_fullname = new std::string;
-#ifdef unix 
-	if(path[path.length() -1] != '/'){
-		*temp_fullname = path + '/' + name;
-		*temp_path += '/'; // redact str
-#elif defined(WIN32)
-    if(path[path.length() -1] != '\\'){
-		*temp_fullname = path + '\\' + name;
-		*temp_path += '\\';
-#endif
-	}else{
-		*temp_fullname = path + name;
-	} 
-    delete temp_path; // free memory
-    delete temp_name;
-    _info = new _finfo(*temp_fullname); // full information struct
-    delete temp_fullname; 
-}
-
-FSTool::file::~file(){
-    delete _info;
+FSTool::file::file(std::string name, std::string path) : FSTool::_base(name,path) {
+    file(this->_fullName); 
 }
 
 int FSTool::file::resize(){
 #ifdef unix
     struct stat rdata;
-    stat(this->_info->full_name.c_str(), &rdata);
+    stat(this->_fullName.c_str(), &rdata);
 #elif defined(WIN32)
     struct _stat rdata;
-    _stat(this->_info->full_name.c_str(), &rdata);
+    _stat(this->_fullName.c_str(), &rdata);
 #endif
     return rdata.st_size;
 }

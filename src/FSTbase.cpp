@@ -38,10 +38,6 @@ FSTool::_base::_base(std::string name){
     delete find;                                              // free memory 
 }
 
-FSTool::_base::~_base(){
-    
-}
-
 int FSTool::_base::size(){
     return _size;
 }
