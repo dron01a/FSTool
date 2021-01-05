@@ -19,7 +19,7 @@
 
 namespace FSTool {
 
-    bool search(std::string name); // search file/folder
+    bool exists(std::string name); // search file/folder
 
     typedef std::vector<std::string> strvect;
 
@@ -45,7 +45,6 @@ namespace FSTool {
         virtual std::string back() = 0;             // return last element
         virtual bool range(int index) = 0;          // check index
         virtual strvect get_elements_of_path() = 0; // return elements of path
-        virtual bool exists() = 0;                  // checks the file for existence
         virtual int create() = 0;                   // create file in directory
         virtual int destroy() = 0;                  // delete file
         virtual bool empty() = 0;                   // if file empty
@@ -60,6 +59,7 @@ namespace FSTool {
         std::string front();                  // return first element
         std::string at(int index);            // get data with check
         void move(std::string path);          // move file/folder to path 
+        bool exists();                        // checks the file/folder for existence
 
     };
 }

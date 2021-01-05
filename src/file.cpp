@@ -72,18 +72,6 @@ FSTool::file::~file(){
     delete _info;
 }
 
-bool FSTool::file::exists(){
-    std::fstream *temp = new std::fstream(this->_info->full_name); // create temp object 
-    if( !temp->is_open() ) {
-        delete temp;   // free memory
-        return false;
-    }else{
-        temp->close(); // close stream
-        delete temp;   // free memory
-        return true; 
-    }
-}
-
 int FSTool::file::resize(){
 #ifdef unix
     struct stat rdata;

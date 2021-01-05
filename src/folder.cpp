@@ -92,18 +92,6 @@ FSTool::folder::~folder(){
     delete _info;
 }
 
-bool FSTool::folder::exists(){
-#ifdef WIN32
-    if (_access(_info->full_name.c_str(), 0))
-#elif defined(unix)
-    if (access(_info->full_name.c_str(), 0))
-#endif
-    {   
-        return false; // if folder not exists 
-    }
-    return true;
-}
-
 bool FSTool::folder::empty(){
     if(this->_info->length == 2){
         return true;

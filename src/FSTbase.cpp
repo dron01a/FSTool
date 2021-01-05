@@ -1,6 +1,6 @@
 #include "FSTbase.h"
 
-bool FSTool::search(std::string path){
+bool FSTool::exists(std::string path){
     #ifdef WIN32
 	if (_access(path.c_str(), 0)){}
 #elif defined(unix) 
@@ -81,7 +81,7 @@ std::string FSTool::_base::at(int index) {
 }
 
 void FSTool::_base::move(std::string path){
-    if(!search(path)){
+    if(!FSTool::exists(path)){
         throw FSTool::fs_exception(path + " not found", -1);
     }
     int *res = new int(std::rename(_fullName.c_str(), path.c_str()));
@@ -92,4 +92,8 @@ void FSTool::_base::move(std::string path){
         throw FSTool::fs_exception("renaming error", -11);
     }
     delete res;
+}
+
+bool FSTool::_base::exists(){
+    return FSTool::exists(_fullName); // return result of FSTool::exists(std::string)
 }
