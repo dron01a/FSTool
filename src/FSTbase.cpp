@@ -1,5 +1,16 @@
 #include "FSTbase.h"
 
+bool FSTool::search(std::string path){
+    #ifdef WIN32
+	if (_access(path.c_str(), 0)){}
+#elif defined(unix) 
+    if (access(path.c_str(), 0) !=0){
+#endif
+		return false; // if not exists 
+    }
+    return true; // if path found 
+}
+
 FSTool::_base::_base(std::string name, std::string path){
     std::string *_path = new std::string(path); // temporary strings
     std::string *_name = new std::string(name); // to path, name and full name
@@ -17,19 +28,18 @@ FSTool::_base::_base(std::string name, std::string path){
     delete _path; // free memory
     delete _name;
     delete _fullName;
-    this->_fullName = name;
-    int *find = new int(this->_fullName.find_last_of("/\\")); // split into file name and path
-    this->_path = this->_fullName.substr(0, *find);            // set path
-    this->_name = this->_fullName.substr(*find + 1);           // set file name
-    delete find;    
 }
 
 FSTool::_base::_base(std::string name){
     this->_fullName = name;
     int *find = new int(this->_fullName.find_last_of("/\\")); // split into file name and path
-    this->_path = this->_fullName.substr(0, *find);            // set path
-    this->_name = this->_fullName.substr(*find + 1);           // set file name
-    delete find;                                              // free memory                                 // free memory 
+    this->_path = this->_fullName.substr(0, *find);           // set path
+    this->_name = this->_fullName.substr(*find + 1);          // set file name
+    delete find;                                              // free memory 
+}
+
+FSTool::_base::~_base(){
+    
 }
 
 int FSTool::_base::size(){
@@ -46,10 +56,6 @@ std::string FSTool::_base::full_name(){
 
 std::string FSTool::_base::path(){
     return _path;
-}
-
-FSTool::_base::_lastModification FSTool::_base::lastModification(){
-    return _lM; 
 }
 
 void FSTool::_base::rename(std::string newName){
@@ -72,4 +78,18 @@ std::string FSTool::_base::at(int index) {
         return this->get(index);
     }
     throw FSTool::fs_exception("not valid index", -3); 
+}
+
+void FSTool::_base::move(std::string path){
+    if(!search(path)){
+        throw FSTool::fs_exception(path + " not found", -1);
+    }
+    int *res = new int(std::rename(_fullName.c_str(), path.c_str()));
+    if(*res != 0){
+        if(*res == ENOENT){
+            throw FSTool::fs_exception("not found", -1);
+        }
+        throw FSTool::fs_exception("renaming error", -11);
+    }
+    delete res;
 }

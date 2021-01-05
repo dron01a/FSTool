@@ -7,17 +7,11 @@
 
 namespace FSTool {
 
-    //struct with information of file
-    struct _finfo : _baseINFO{
-        _finfo(std::string full_name); // constructor
-        int lines = 0;                 // get count strings in file
-    };
-
     // class for work with files
     class file : public _base {
     private:
-        _finfo *_info = nullptr;  // struct with info
-        int resize();   // return file size
+        int lines = 0; // get count strings in file
+        int resize();  // return file size
     public:
         file(std::string name, std::string path); // construcnors
         file(std::string name);
@@ -26,7 +20,6 @@ namespace FSTool {
         int create();                            // create file in directory
         int destroy();                           // delete file
         bool empty();                            // if file empty
-        _finfo get_info();                       // return information of file
         std::string get(int index);              // return string in file from index
         std::string back();                      // return last string
         bool range(int index);                   // check index
@@ -38,13 +31,9 @@ namespace FSTool {
         int rename_file(std::string new_name);   // change name of file
         void copy(file &obj);                    // clone data in other file
         void copy(std::string name);             // clone data in other file
-        void move(std::string path);             // moves a file to the specified folder
         strvect get_elements_of_path();          // return elements of path
         int find(std::string object, int begin = 0, int end = 0); //find object in file
     };
-
-    // function return information of file
-    _finfo file_information(std::string file_name);
 
 };
 

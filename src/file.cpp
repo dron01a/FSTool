@@ -307,18 +307,6 @@ void FSTool::file::copy(std::string name){
     delete out;
 }
 
-void FSTool::file::move(std::string path){
-    FSTool::file * temp = new FSTool::file(this->_info->name, path);  // temp file object
-    if(!temp->exists()){
-        temp->create();
-    }
-    temp->copy(this->_info->full_name); // clone file   
-    this->destroy(); // delete file 
-    this->_info->path = path;
-    this->_info->full_name = temp->get_info().full_name;
-    delete temp;
-}
-
 int FSTool::file::find(std::string object, int begin, int end){
     if(!this->exists()){
         throw fs_exception("file not found", -2); // if file exists
