@@ -46,16 +46,16 @@ int FSTool::file::create(){
     if(this->exists()){
         throw fs_exception("file already exists", -1);
     }
-    std::ofstream *temp = new std::ofstream(this->_info->full_name, std::fstream::binary); // create temp object
+    std::ofstream *temp = new std::ofstream(this->_fullName.c_str(), std::fstream::binary); // create temp object
     if (!temp->is_open()){
         delete temp;   // free memory
         return 1;      // return code
     }
     else{
-        temp->close();                                    // close stream
-        this->_info = new _finfo(this->_info->full_name); // full information struct
-        delete temp;                                      // free memory
-        return 0;                                         // return code
+        temp->close();          // close stream
+        file(this->_fullName);
+        delete temp;            // free memory
+        return 0;               // return code
     }
 }
 
@@ -63,44 +63,40 @@ int FSTool::file::destroy(){
     if(!this->exists()){
         throw fs_exception("file not found", -2);
     }
-    return remove(this->_info->full_name.c_str()); // return result of deleting file
+    return remove(this->_fullName.c_str()); // return result of deleting file
 }
 
 bool FSTool::file::empty(){
-    return (this->_info->size == 0) && (this->_info->lines == 0); 
-}
-
-FSTool::_finfo FSTool::file::get_info(){
-    return *this->_info; // return struct with info of file
+    return (this->_size == 0) && (this->_lines == 0); 
 }
 
 std::string FSTool::file::get(int index){
     if(!this->exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
-    if(index >= _info->lines){
+    if(index >= _lines || index < 0){
         throw fs_exception("not valid index", -3);
     }
-    std::fstream * object = new std::fstream(this->_info->full_name, std::fstream::out | std::fstream::in | std::fstream::binary); 
-	std::string buf; //result
-	int* i = new int(0); //temporary counter
-	while (getline(*object, buf)) {//find index
-		if (*i == index)
+    std::fstream * object = new std::fstream(this->_fullName, std::fstream::out | std::fstream::in | std::fstream::binary);
+    std::string buf;               // result
+    int *i = new int(0);           // temporary counter
+    while (getline(*object, buf)){ // find index
+        if (*i == index)
 			break;
 		(*i)++;
-	}
-	object->close();//close file
+    }
+    object->close();//close file
 	delete i;
     delete object;
 	return buf;
 }
 
 std::string FSTool::file::back(){
-    return this->get(this->_info->lines--);// return lasr line  
+    return this->get(_lines--);// return lasr line  
 }
 
 bool FSTool::file::range(int index){
-    if (index < 0 || index > this->_info->lines){
+    if (index < 0 || index > _lines){
         return false; // if index not in range
     }
     else{
@@ -113,11 +109,11 @@ int FSTool::file::add(std::string data){
         throw fs_exception("file not found", -2); // if file exists
     }
     std::fstream *obj; // temp object 
-    obj = new std::fstream(this->_info->full_name, std::fstream::app | std::fstream::binary);
+    obj = new std::fstream(this->_fullName, std::fstream::app | std::fstream::binary);
     *obj << data << std::endl; // write
     obj->close();              // save and close stream 
     delete obj;                // free memory 
-    this->_info->lines++;
+    this->_lines++;
     return 0;
 }
 
@@ -125,23 +121,23 @@ int FSTool::file::add(std::string data, int index){
     if(!this->exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
-    if(index >= _info->lines){
+    if(index >= this->_lines || index < 0){
         throw fs_exception("not valid index", -3);
     }
-    std::string *_buff = new std::string[this->_info->lines]; // temp buffeer
-    for(int i = 0; i < this->_info->lines; i++){
+    std::string *_buff = new std::string[this->_lines]; // temp buffeer
+    for(int i = 0; i < this->_lines; i++){
         _buff[i] = this->get(i); // load file data to buff 
     }
     _buff[index] = data; // rewrite line 
-    int *lines = new int(this->_info->lines); 
+    int *linesTemp = new int(this->_lines); 
     this->clear(); // delete data in file
-    for(int i = 0; i < *lines; i++){
+    for(int i = 0; i < *linesTemp; i++){
         this->add(_buff[i]); // load buf to file  
     }
     delete[] _buff;
-    delete lines;
-    this->_info->lines++;
-    this->_info->size = resize();  // get new size from bites of file 
+    delete linesTemp;
+    this->_lines++;
+    this->_size = resize();  // get new size from bites of file 
     
     return 0; 
 }
@@ -150,25 +146,25 @@ int FSTool::file::insert(std::string data, int index){
     if(!this->exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
-    if(index >= _info->lines){
+    if(index >= this->_lines || index < 0){
         throw fs_exception("not valid index", -3);
     }
-    std::string *_fdata = new std::string[this->_info->lines]; //buffer
-    for (int i = 0; i < this->_info->lines; i++) { // load data in file to array
+    std::string *_fdata = new std::string[this->_lines]; //buffer
+    for (int i = 0; i < this->_lines; i++) { // load data in file to array
         _fdata[i] = this->get(i);
     }
-    int * lines = new int(this->_info->lines); // temp count lines  
+    int *linesTemp = new int(this->_lines);
     this->clear();
-    for (int i = 0; i < *lines; i++){
+    for (int i = 0; i < *linesTemp; i++){
         if (i == index ){
             this->add(data);// add data 
         }
         this->add(_fdata[i]);
     }
     delete[] _fdata;
-    delete lines;
-    this->_info->lines++;
-    this->_info->size = resize(); // get new size from bites of file 
+    delete linesTemp;
+    this->_lines++;
+    this->_size = resize(); // get new size from bites of file 
     return 0;
 }
 
@@ -176,16 +172,16 @@ int FSTool::file::insert(std::string data, int index, int count){
     if(!this->exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
-    if(index >= _info->lines || index < 0){
+    if(index >= this->_lines || index < 0){
         throw fs_exception("not valid index", -3);
     }
-    std::string *_fdata = new std::string[this->_info->lines]; //buffer
-    for (int i = 0; i < this->_info->lines; i++) { // load data in file to array
+    std::string *_fdata = new std::string[this->_lines]; //buffer
+    for (int i = 0; i < this->_lines; i++) { // load data in file to array
         _fdata[i] = this->get(i);
     }
-    int * lines = new int(this->_info->lines);  // temp count lines
+    int * linesTemp = new int(this->_lines);  // temp count lines
     this->clear();
-    for (int i = 0; i < *lines; i++){
+    for (int i = 0; i < *linesTemp; i++){
         if (i == index ){
             for (int c = 0; c < count; c++){
                 this->add(data); // add data
@@ -193,48 +189,25 @@ int FSTool::file::insert(std::string data, int index, int count){
         }
         this->add(_fdata[i]);
     }
-    delete lines;
+    delete linesTemp;
     delete[] _fdata;
-    this->_info->lines++;
-    this->_info->size = resize(); // get new size from bites of file 
+    this->_lines++;
+    this->_size = resize(); // get new size from bites of file 
     return 0;
 }
 
 void FSTool::file::clear(){
-    std::ofstream *temp = new std::ofstream(this->_info->full_name); // temp object
-    this->_info->lines = 0;
-    this->_info->size = 0;
+    std::ofstream *temp = new std::ofstream(this->_fullName); // temp object
+    this->_lines = 0;
+    this->_size = 0;
     delete temp;
-}
-
-int FSTool::file::rename_file(std::string new_name){
-    if(!this->exists()){
-        throw fs_exception("file not found", -2); // if file exists
-    }
-    std::string * temp_fullname = new std::string; // temp string 
-#ifdef unix 
-	if(_info->path[_info->path.length() -1] != '/'){
-		*temp_fullname = _info->path + '/' + new_name;
-#elif defined(WIN32)
-    if(path[path.length() -1] != '\\'){
-        *temp_fullname = _info->path + '\\' + new_name;		
-#endif
-    }
-    else{
-        *temp_fullname = this->_info->path + new_name;
-    }
-    rename(this->_info->full_name.c_str(), temp_fullname->c_str());
-    this->_info->name = new_name;
-    this->_info->full_name = *temp_fullname;
-    delete temp_fullname;
-    return 0;
 }
 
 void FSTool::file::copy(file &source){
     std::ifstream *src; // temp input
     std::ofstream *out; // temp output
-    src = new std::ifstream(source.get_info().full_name, std::ios::binary); // open input file
-    out = new std::ofstream(this->_info->full_name, std::ios::binary); // open source file 
+    src = new std::ifstream(source.full_name(), std::ios::binary); // open input file
+    out = new std::ofstream(this->_fullName, std::ios::binary); // open source file 
     *out << src->rdbuf(); // write data
     src->close(); // close streams 
 	out->close();
@@ -246,7 +219,7 @@ void FSTool::file::copy(std::string name){
     std::ifstream *src; // temp input
     std::ofstream *out; // temp output
     src = new std::ifstream(name, std::ios::binary); // open input file
-    out = new std::ofstream(this->_info->full_name, std::ios::binary); // open source file 
+    out = new std::ofstream(this->_fullName, std::ios::binary); // open source file 
     *out << src->rdbuf(); // write data
     src->close(); // close streams 
 	out->close();
@@ -267,7 +240,7 @@ int FSTool::file::find(std::string object, int begin, int end){
         _object = object;
         _begin = begin;
         if(end == 0){
-            _end = this->_info->lines;
+            _end = this->_lines;
         }
         else{
             _end = end;
@@ -305,8 +278,8 @@ FSTool::strvect FSTool::file::get_elements_of_path(){
 	for (int i = 0; token != NULL; token = strtok_s(NULL, "\\", &next_token), i++){
         *temp = elements[i-1] + "\\" + token;
 #elif defined(unix)
-    char p[_info->full_name.length()];
-    strcpy(p, _info->full_name.c_str());
+    char p[this->_fullName.length()];
+    strcpy(p, this->_fullName.c_str());
     token = strtok(p, "/");
     elements.push_back(token);
     for (int i = 1; token != NULL; token = strtok(NULL, "/"), i++){
