@@ -1,9 +1,20 @@
 #include "file.h"
 
 FSTool::file::file(std::string name) : FSTool::_base(name) {
-    int *found = new int(this->_fullName.find_first_of(".")); // find "." to set extension of file
-    this->extension = this->_fullName.substr(*found + 1, name.size() - *found + 1);
-    delete found; // free memory
+    _extension = this->extension();
+    if(this->exists()){
+        this->update();
+    }
+}   
+
+FSTool::file::file(std::string name, std::string path) : FSTool::_base(name,path) {
+    _extension = this->extension();
+    if(this->exists()){
+        this->update();
+    }
+}
+
+void FSTool::file::update(){
     std::fstream *obj = new std::fstream(this->_fullName);
     if(obj->is_open()){
         std::string *buf = new std::string; //temporary string for getline
@@ -27,8 +38,18 @@ FSTool::file::file(std::string name) : FSTool::_base(name) {
     }
 }
 
-FSTool::file::file(std::string name, std::string path) : FSTool::_base(name,path) {
-    file(this->_fullName); 
+std::string FSTool::file::extension(){
+    int * found; // position of '.'
+    found = new int(this->_fullName.find_first_of("."));
+    if(*found != std::string::npos){
+        return _fullName.substr(*found + 1, _fullName.size() - *found);
+    }
+    delete found;
+    return ""; 
+}
+
+int FSTool::file::lines(){
+    return _lines;
 }
 
 int FSTool::file::resize(){

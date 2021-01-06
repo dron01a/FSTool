@@ -2,16 +2,9 @@
 #define __FOLDER__H__
 
 #ifdef unix // for unix 
-#include <unistd.h>
 #include "dirent.h"
-#elif defined(WIN32) // for windows
-#include "direct.h"
-#include "io.h"
-#include "dos.h"
 #endif
 #include "FSTbase.h"
-#include "FSexception.h"
-#include <vector>
 
 namespace FSTool{
 
@@ -21,15 +14,19 @@ namespace FSTool{
         int _folders = 0;  // count of folders in folder
         int _files = 0;    // count of files in folder
         int _elements = 0; // count of elements in folder
-        int _length = 0;   // count of elements in maindir
+        int _length = 0;   // count of elements in main dir
     public:
         folder(std::string name, std::string path); // construcnor
         folder(std::string name);
-        ~folder();
+        int folders();                  // return count of folders
+        int files();                    // return count of files
+        int elements();                 // return count of elements in folder
+        int lenght();                   // return count of elemtns in parent dir 
         bool exists();                  // checks the folder for existence
         int create();                   // create folder in directory
         int destroy();                  // delete folder
         bool empty();                   // if folder empty
+        void update();                  // update information
         std::string get(int index);     // return name of element in folder from index
         std::string back();             // return last element
         bool range(int index);          // check index

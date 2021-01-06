@@ -10,15 +10,18 @@ namespace FSTool {
     // class for work with files
     class file : public _base {
     private:
-        std::string extension; // file extension
+        std::string _extension; // file extension
         int _lines = 0;         // get count strings in file
-        int resize();          // return file size
+        int resize();           // return file size
     public:
         file(std::string name, std::string path); // construcnors
         file(std::string name);
         int create();                            // create file in directory
         int destroy();                           // delete file
         bool empty();                            // if file empty
+        void update();                           // update information
+        std::string extension();                 // return extension of file
+        int lines();
         std::string get(int index);              // return string in file from index
         std::string back();                      // return last string
         bool range(int index);                   // check index

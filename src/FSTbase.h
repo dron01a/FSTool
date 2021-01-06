@@ -52,6 +52,7 @@ namespace FSTool {
         virtual int create() = 0;                   // create file in directory
         virtual int destroy() = 0;                  // delete file
         virtual bool empty() = 0;                   // if file empty
+        virtual void update() = 0;                  // update info of file/folder
         virtual int find(std::string object, int begin = 0, int end = 0) = 0;
 
         // non virtual methods
