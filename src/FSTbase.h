@@ -38,6 +38,8 @@ namespace FSTool {
 
     //base class for folder and file
     class _base : protected _baseINFO{
+    private:
+        void _updateFullName(std::string path, std::string name);
     public:
 
         // class constructor

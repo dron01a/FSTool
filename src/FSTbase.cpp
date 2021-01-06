@@ -1,7 +1,7 @@
 #include "FSTbase.h"
 
 bool FSTool::exists(std::string path){
-    #ifdef WIN32
+#ifdef WIN32
 	if (_access(path.c_str(), 0)){}
 #elif defined(unix) 
     if (access(path.c_str(), 0) !=0){
@@ -12,13 +12,37 @@ bool FSTool::exists(std::string path){
 }
 
 FSTool::_base::_base(std::string name, std::string path){
+    this->_updateFullName(path,name);
+}
+
+FSTool::_base::_base(std::string name){
+    this->_fullName = name;
+    int *find = new int(this->_fullName.find_last_of("/\\")); // split into file name and path
+    if(*find !=std::string::npos){
+        this->_path = this->_fullName.substr(0, *find);  // set path
+        this->_name = this->_fullName.substr(*find + 1); // set file name
+    }
+    else{
+        this->_name = name;
+    }
+    delete find; // free memory 
+}
+
+void FSTool::_base::_updateFullName(std::string path, std::string name){
     std::string *_path = new std::string(path); // temporary strings
     std::string *_name = new std::string(name); // to path, name and full name
     std::string *_fullName = new std::string;
-	if(path[path.length() -1] != '/\\'){
-		*_fullName = path + "/\\" + name;
-		*_path += '/\\';
+#ifdef WIN32
+	if(path[path.length() -1] != '\\'){
+		*_fullName = path + '\\' + name;
+		*_path += '\\';
 	}
+#elif defined(unix) 
+    if(path[path.length() -1] != '/'){
+		*_fullName = path + '/' + name;
+		*_path += '/';
+	}
+#endif
     else{
 		*_fullName = path + name;
 	}
@@ -28,14 +52,6 @@ FSTool::_base::_base(std::string name, std::string path){
     delete _path; // free memory
     delete _name;
     delete _fullName;
-}
-
-FSTool::_base::_base(std::string name){
-    this->_fullName = name;
-    int *find = new int(this->_fullName.find_last_of("/\\")); // split into file name and path
-    this->_path = this->_fullName.substr(0, *find);           // set path
-    this->_name = this->_fullName.substr(*find + 1);          // set file name
-    delete find;                                              // free memory 
 }
 
 int FSTool::_base::size(){
@@ -62,6 +78,7 @@ void FSTool::_base::rename(std::string newName){
         }
         throw FSTool::fs_exception("renaming error", -11);
     }
+    this->_updateFullName(this->_path,newName);
     delete res;
 }
 
@@ -87,6 +104,7 @@ void FSTool::_base::move(std::string path){
         }
         throw FSTool::fs_exception("renaming error", -11);
     }
+    this->_updateFullName(path,this->_name);
     delete res;
 }
 

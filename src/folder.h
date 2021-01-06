@@ -22,7 +22,6 @@ namespace FSTool{
         int files();                    // return count of files
         int elements();                 // return count of elements in folder
         int lenght();                   // return count of elemtns in parent dir 
-        bool exists();                  // checks the folder for existence
         int create();                   // create folder in directory
         int destroy();                  // delete folder
         bool empty();                   // if folder empty
