@@ -39,7 +39,10 @@ namespace FSTool {
     //base class for folder and file
     class _base : protected _baseINFO{
     private:
+
+        // update _fullName after using methods rename, move
         void _updateFullName(std::string path, std::string name);
+    
     public:
 
         // class constructor
@@ -69,6 +72,14 @@ namespace FSTool {
         bool exists();                        // checks the file/folder for existence
 
     };
+
+    // comparison operators 
+    bool operator==(_base & objectA, _base & objectB);
+    bool operator>=(_base & objectA, _base & objectB);
+    bool operator<=(_base & objectA, _base & objectB);
+    bool operator!=(_base & objectA, _base & objectB);
+    bool operator<(_base & objectA, _base & objectB); 
+    bool operator>(_base & objectA, _base & objectB);
 }
 
 #endif

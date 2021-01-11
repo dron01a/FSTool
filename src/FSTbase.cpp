@@ -111,3 +111,27 @@ void FSTool::_base::move(std::string path){
 bool FSTool::_base::exists(){
     return FSTool::exists(_fullName); // return result of FSTool::exists(std::string)
 }
+
+bool FSTool::operator==(FSTool::_base & objectA, FSTool::_base & objectB){
+    return objectA.size() == objectB.size(); 
+}
+
+bool FSTool::operator>=(FSTool::_base & objectA, FSTool::_base & objectB){
+    return objectA.size() >= objectB.size(); 
+}
+
+bool FSTool::operator<=(FSTool::_base & objectA, FSTool::_base & objectB){
+    return objectA.size() <= objectB.size(); 
+}
+
+bool FSTool::operator!=(FSTool::_base & objectA, FSTool::_base & objectB){
+    return objectA.size() != objectB.size(); 
+}
+
+bool FSTool::operator<(FSTool::_base & objectA, FSTool::_base & objectB){
+    return objectA.size() < objectB.size(); 
+}
+
+bool FSTool::operator>(FSTool::_base & objectA, FSTool::_base & objectB){
+    return objectA.size() > objectB.size(); 
+}
