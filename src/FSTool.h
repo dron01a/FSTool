@@ -14,7 +14,22 @@ namespace FSTool{
     // function find object in fs element 
     int find(std::string name, std::string object, int begin = 0, int end = 0);
 
-    
+    // class for work with filesystem free 
+    class filesystemFree{
+    public:
+        filesystemFree(std::string name);      // class constructor 
+        ~filesystemFree();                     // class destructor 
+        int countNodes();                      // get size of _subNodes
+        int size();                            // return size of bytes
+        filesystemFree get(int index);         // return child filesystem free
+        std::string type();                    // return type of node 
+        std::string name();                    // return type of node 
+    private:
+        int _size = 0;                         // size of element
+        std::string _type;                     // type of node 
+        std::string _name;                     // name of node 
+        std::vector<filesystemFree> _subNodes; // child nofes
+    };
    
 }; 
 

@@ -105,7 +105,7 @@ std::string FSTool::folder::get(int index){
     if(index >= this->_length || index < 0){
         throw fs_exception("not valid index of element", -3);
     }
-    int* inter = new int;
+    int inter = 0;
     std::string result;
 #ifdef WIN32
 	struct _finddata_t data;
@@ -122,21 +122,18 @@ std::string FSTool::folder::get(int index){
 	DIR *dir = opendir(this->_fullName.c_str());
 	struct dirent *ent;
 	while((ent = readdir(dir)) != NULL){
-		if (*inter == index){
+		if (inter == index){
             result = ent->d_name;
             break;
         }
-		else{
-			(*inter)++;
-        }
+		inter++;
 	}
 #endif
-    delete inter;
     return result;
 }
 
 std::string FSTool::folder::back(){
-    return this->get(this->_length);
+    return this->get(this->_length -1);
 }
 
 

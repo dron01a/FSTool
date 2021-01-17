@@ -59,3 +59,53 @@ int FSTool::find(std::string name, std::string object, int begin, int end){
     delete temp;
     return result;
 }
+
+FSTool::filesystemFree::filesystemFree(std::string name){
+    if (is_folder(name)){    
+        folder * temp = new FSTool::folder(name); // temp object as folder
+        this-> _type = "folder"; // set type;
+        this->_size = temp->size(); // set size
+        this->_name = name;
+        for(int i = 0; i != temp->lenght(); i++){
+            if(strcmp(temp->get(i).c_str(),".") == 0 || strcmp(temp->get(i).c_str(),"..") == 0){
+                continue; // skip .. and . 
+            }
+            _subNodes.push_back(FSTool::filesystemFree(name + "/" + temp->get(i)));
+        }
+        delete temp; 
+    }
+    else{
+        file * temp = new FSTool::file(name); // temp object as file
+        this->_name = name;
+        this-> _type = "file"; // set type;
+        this->_size = temp->size(); // set size
+        delete temp; 
+    }
+      
+  
+    
+}
+
+FSTool::filesystemFree::~filesystemFree(){
+    _subNodes.clear();
+}
+
+int FSTool::filesystemFree::countNodes(){
+    return _subNodes.size();
+}
+
+int FSTool::filesystemFree::size(){
+    return _size;
+}
+
+FSTool::filesystemFree FSTool::filesystemFree::get(int index){
+    return _subNodes[index];
+}
+
+std::string FSTool::filesystemFree::type(){
+    return _type;
+}
+
+std::string FSTool::filesystemFree::name(){
+    return _name;
+}
