@@ -13,6 +13,8 @@ namespace FSTool{
 
     // function find object in fs element 
     int find(std::string name, std::string object, int begin = 0, int end = 0);
+
+    
    
 }; 
 

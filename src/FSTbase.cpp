@@ -70,6 +70,10 @@ std::string FSTool::_base::path(){
     return _path;
 }
 
+tm* FSTool::_base::last_modification(){
+    return _lmTime; 
+}
+
 void FSTool::_base::rename(std::string newName){
     int *res = new int(std::rename(_fullName.c_str(), newName.c_str()));
     if(*res != 0){

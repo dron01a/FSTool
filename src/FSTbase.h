@@ -70,6 +70,7 @@ namespace FSTool {
         std::string at(int index);            // get data with check
         void move(std::string path);          // move file/folder to path 
         bool exists();                        // checks the file/folder for existence
+        tm * last_modification();               // return tm struct with date of last modification
 
     };
 

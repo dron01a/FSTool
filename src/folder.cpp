@@ -13,6 +13,7 @@ FSTool::folder::folder(std::string name, std::string path) : FSTool::_base(name,
 }
 
 void FSTool::folder::update(){
+    std::vector<time_t> changes;
 #ifdef WIN32
     struct _finddata_t data;
     intptr_t done = _findfirst(this->_fullName.c_str(), &data);
@@ -48,16 +49,24 @@ void FSTool::folder::update(){
             this->_folders++;
             this->_folders += temp->folders();
             this->_files += temp->files();
+            changes.push_back(mktime(temp->last_modification()));
+            delete temp;
 		}
         if(ent->d_type == DT_REG){
+            tm * tempTime = localtime(&data.st_mtime);
 			stat((this->_fullName + "/" + ent->d_name).c_str(),&data);
             this->_files++;
 	    	this->_size += data.st_size;
+            tempTime->tm_mon += 1;                // fix month
+            tempTime->tm_year += 1900;            // fix year
+            changes.push_back(mktime(tempTime));
         }
 	}
 	closedir(dir);
 #endif
     this->_elements += this->_files + this->_folders;// count elements
+    time_t last =  *std::max_element(changes.begin(),changes.end());
+    this->_lmTime = localtime(&last);
 }
 
 bool FSTool::folder::empty(){
