@@ -1,5 +1,9 @@
 #include "file.h"
 
+#ifdef WIN32
+#define stat _stat
+#endif
+
 FSTool::file::file(std::string name) : FSTool::_base(name) {
     _extension = this->extension();
     if(this->exists()){
@@ -24,13 +28,9 @@ void FSTool::file::update(){
         obj->close(); // close file
         delete buf;
         delete obj;
-#ifdef unix
+
         struct stat data;
         stat(this->_fullName.c_str(), &data);
-#elif defined(WIN32)
-        struct _stat data;
-        _stat(this->_fullName.c_str(), &data);
-#endif
         this->_size = data.st_size;
         this->_lmTime = gmtime(&data.st_mtime); // add time to struct
         this->_lmTime->tm_mon += 1;             // fix month
@@ -53,13 +53,8 @@ int FSTool::file::lines(){
 }
 
 int FSTool::file::resize(){
-#ifdef unix
     struct stat rdata;
     stat(this->_fullName.c_str(), &rdata);
-#elif defined(WIN32)
-    struct _stat rdata;
-    _stat(this->_fullName.c_str(), &rdata);
-#endif
     return rdata.st_size;
 }
 

@@ -1,5 +1,10 @@
 #include "folder.h"
 
+#ifdef WIN32
+#define stat _stat
+#define mkdir _mkdir;
+#endif
+
 FSTool::folder::folder(std::string name) : FSTool::_base(name) {
     if (this->exists()){
         this->update();
@@ -66,6 +71,7 @@ void FSTool::folder::update(){
 #endif
     this->_elements += this->_files + this->_folders;// count elements
     time_t last =  *std::max_element(changes.begin(),changes.end());
+    changes.clear();
     this->_lmTime = localtime(&last);
 }
 
@@ -175,11 +181,7 @@ int FSTool::folder::create(){
     }
     std::vector<std::string> path = this->get_elements_of_path();
 	for (int i = 0; i < path.size(); i++) {//create folders
-#ifdef WIN32
-		_mkdir(pats[i].c_str());
-#elif defined(unix)
         mkdir(path[i].c_str(),0777);
-#endif
     }
     return 0;
 } 

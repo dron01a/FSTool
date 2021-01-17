@@ -1,5 +1,10 @@
 #include "FSTool.h"
 
+#ifdef WIN32
+#define stat _stat
+#define access _access;
+#endif
+
 bool FSTool::is_file(std::string file_name){
 #if defined(WIN32)
     struct _stat fl_stat;

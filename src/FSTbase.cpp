@@ -1,11 +1,12 @@
 #include "FSTbase.h"
 
-bool FSTool::exists(std::string path){
 #ifdef WIN32
-	if (_access(path.c_str(), 0)){}
-#elif defined(unix) 
-    if (access(path.c_str(), 0) !=0){
+#define stat _stat
+#define access _access;
 #endif
+
+bool FSTool::exists(std::string path){ 
+    if (access(path.c_str(), 0) !=0){
 		return false; // if not exists 
     }
     return true; // if path found 
