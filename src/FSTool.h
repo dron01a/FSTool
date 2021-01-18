@@ -23,11 +23,14 @@ namespace FSTool{
         int size();                            // return size of bytes
         filesystemFree get(int index);         // return child filesystem free
         std::string type();                    // return type of node 
-        std::string name();                    // return type of node 
+        std::string name();                    // return name of node 
+        std::string full_name();               // return full name 
+        bool have(std::string name);           // check element with this name
     private:
         int _size = 0;                         // size of element
         std::string _type;                     // type of node 
         std::string _name;                     // name of node 
+        std::string _fullName;                 // name with path
         std::vector<filesystemFree> _subNodes; // child nofes
     };
    

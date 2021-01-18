@@ -133,7 +133,7 @@ std::string FSTool::folder::get(int index){
 }
 
 std::string FSTool::folder::back(){
-    return this->get(this->_length -1);
+    return this->get(this->_length);
 }
 
 

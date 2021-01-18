@@ -65,7 +65,7 @@ FSTool::filesystemFree::filesystemFree(std::string name){
         folder * temp = new FSTool::folder(name); // temp object as folder
         this-> _type = "folder"; // set type;
         this->_size = temp->size(); // set size
-        this->_name = name;
+        this->_name = temp->name();
         for(int i = 0; i != temp->lenght(); i++){
             if(strcmp(temp->get(i).c_str(),".") == 0 || strcmp(temp->get(i).c_str(),"..") == 0){
                 continue; // skip .. and . 
@@ -76,14 +76,12 @@ FSTool::filesystemFree::filesystemFree(std::string name){
     }
     else{
         file * temp = new FSTool::file(name); // temp object as file
-        this->_name = name;
+        this->_name = temp->name();
         this-> _type = "file"; // set type;
         this->_size = temp->size(); // set size
         delete temp; 
     }
-      
-  
-    
+    this->_fullName = name; 
 }
 
 FSTool::filesystemFree::~filesystemFree(){
@@ -108,4 +106,23 @@ std::string FSTool::filesystemFree::type(){
 
 std::string FSTool::filesystemFree::name(){
     return _name;
+}
+
+std::string FSTool::filesystemFree::full_name(){
+    return _fullName;
+}
+
+bool FSTool::filesystemFree::have(std::string name){
+    for (int i = 0; i < _subNodes.size(); i++){
+        if(_subNodes[i].name() == name){
+            return true;
+        }
+        if(is_folder(_subNodes[i].full_name())){
+            if (_subNodes[i].have(name) == false){
+                continue;
+            }
+            return true;
+        }
+    }
+    return false;
 }
