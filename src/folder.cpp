@@ -44,8 +44,9 @@ void FSTool::folder::update(){
     struct stat data;
     stat(this->_fullName.c_str(),&data);
     while((ent = readdir(dir)) != NULL){
+	    stat((this->_fullName + "/" + ent->d_name).c_str(),&data);
         this->_length++;
-	    if(ent->d_type == DT_DIR){
+	    if(S_ISDIR(data.st_mode)){
             if ( strcmp( ".", ent->d_name ) == 0 || strcmp( "..", ent->d_name ) == 0 ){
 			    continue;
             }
@@ -57,9 +58,8 @@ void FSTool::folder::update(){
             changes.push_back(mktime(temp->last_modification()));
             delete temp;
 		}
-        if(ent->d_type == DT_REG){
+        else{
             tm * tempTime = localtime(&data.st_mtime);
-			stat((this->_fullName + "/" + ent->d_name).c_str(),&data);
             this->_files++;
 	    	this->_size += data.st_size;
             tempTime->tm_mon += 1;                // fix month
@@ -70,9 +70,15 @@ void FSTool::folder::update(){
 	closedir(dir);
 #endif
     this->_elements += this->_files + this->_folders;// count elements
-    time_t last =  *std::max_element(changes.begin(),changes.end());
-    changes.clear();
+    time_t last;
+    if (_elements == 0 ){
+        last = time(NULL);
+    }
+    else{ 
+        last = *std::max_element(changes.begin(),changes.end());
+    }
     this->_lmTime = localtime(&last);
+    changes.clear();
 }
 
 bool FSTool::folder::empty(){

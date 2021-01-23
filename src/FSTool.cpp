@@ -61,7 +61,7 @@ int FSTool::find(std::string name, std::string object, int begin, int end){
 }
 
 FSTool::filesystemFree::filesystemFree(std::string name){
-    if (is_folder(name)){    
+    if (is_folder(name)){   
         folder * temp = new FSTool::folder(name); // temp object as folder
         this-> _type = "folder"; // set type;
         this->_size = temp->size(); // set size
@@ -125,4 +125,25 @@ bool FSTool::filesystemFree::have(std::string name){
         }
     }
     return false;
+}
+
+std::string FSTool::filesystemFree::getPath(std::string object){
+    std::string result;
+    if(!have(object)){
+        throw fs_exception("not found", 1);
+    } 
+    for (int i = 0; i <  _subNodes.size(); i++){
+        if(_subNodes[i].name() == object){
+            result = _subNodes[i].full_name();
+            break; 
+        }
+        if(_subNodes[i].type() == "folder"){
+            if(_subNodes[i].have(object)){
+               result = _subNodes[i].getPath(object);
+               break;
+            }
+            continue;
+        }
+    }
+    return result;
 }
