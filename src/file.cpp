@@ -5,29 +5,29 @@
 #endif
 
 FSTool::file::file(std::string name) : FSTool::_base(name) {
-    _extension = this->extension();
-    if(this->exists()){
-        this->update();
+    _extension = extension();
+    if(exists()){
+        update();
     }
 }   
 
 FSTool::file::file(std::string name, std::string path) : FSTool::_base(name,path) {
-    _extension = this->extension();
-    if(this->exists()){
-        this->update();
+    _extension = extension();
+    if(exists()){
+        update();
     }
 }
 
 void FSTool::file::update(){
-    std::fstream *obj = new std::fstream(this->_fullName);
+    std::fstream *obj = new std::fstream(_fullName); // temp stream object
     if(obj->is_open()){
+        _lines = 0;
         std::string *buf = new std::string; //temporary string for getline
         while (getline(*obj, *buf)){
             this->_lines++;
         }
         obj->close(); // close file
         delete buf;
-        delete obj;
         struct stat data;
         stat(this->_fullName.c_str(), &data);
         this->_size = data.st_size;
@@ -35,11 +35,12 @@ void FSTool::file::update(){
         this->_lmTime->tm_mon += 1;             // fix month
         this->_lmTime->tm_year += 1900;         // fix year
     }
+    delete obj;
 }
 
 std::string FSTool::file::extension(){
     int * found; // position of '.'
-    found = new int(this->_fullName.find_first_of("."));
+    found = new int(_fullName.find_first_of("."));
     if(*found != std::string::npos){
         return _fullName.substr(*found + 1, _fullName.size() - *found);
     }
@@ -51,26 +52,21 @@ int FSTool::file::lines(){
     return _lines;
 }
 
-int FSTool::file::resize(){
-    struct stat rdata;
-    stat(this->_fullName.c_str(), &rdata);
-    return rdata.st_size;
-}
-
 int FSTool::file::create(){
     if(this->exists()){
         throw fs_exception("file already exists", -1);
     }
-    std::ofstream *temp = new std::ofstream(this->_fullName.c_str(), std::fstream::binary); // create temp object
+    std::ofstream *temp; // temp stream object
+    temp = new std::ofstream(_fullName.c_str(), std::fstream::binary); // create temp object
     if (!temp->is_open()){
         delete temp;   // free memory
         return 1;      // return code
     }
     else{
-        temp->close();          // close stream
-        file(this->_fullName);
-        delete temp;            // free memory
-        return 0;               // return code
+        temp->close(); // close stream
+        delete temp;   // free memory
+        update();      // update information of file 
+        return 0;      // return code
     }
 }
 
@@ -78,11 +74,11 @@ int FSTool::file::destroy(){
     if(!this->exists()){
         throw fs_exception("file not found", -2);
     }
-    return remove(this->_fullName.c_str()); // return result of deleting file
+    return remove(_fullName.c_str()); // return result of deleting file
 }
 
 bool FSTool::file::empty(){
-    return (this->_size == 0) && (this->_lines == 0); 
+    return (_size == 0) && (_lines == 0); 
 }
 
 std::string FSTool::file::get(int index){
@@ -92,22 +88,23 @@ std::string FSTool::file::get(int index){
     if(index >= _lines || index < 0){
         throw fs_exception("not valid index", -3);
     }
-    std::fstream * object = new std::fstream(this->_fullName, std::fstream::out | std::fstream::in | std::fstream::binary);
-    std::string buf;               // result
-    int *i = new int(0);           // temporary counter
-    while (getline(*object, buf)){ // find index
-        if (*i == index)
+    std::fstream * object; // temp stream object
+    object = new std::fstream(_fullName, std::fstream::out | std::fstream::in | std::fstream::binary);
+    std::string result;               // result
+    int *iter = new int(0);           // temporary counter
+    while (getline(*object, result)){ // find index
+        if (*iter == index)
 			break;
-		(*i)++;
+		(*iter)++;
     }
     object->close();//close file
-	delete i;
+	delete iter;
     delete object;
-	return buf;
+	return result;
 }
 
 std::string FSTool::file::back(){
-    return this->get(_lines--);// return lasr line  
+    return get(_lines--);// return lasr line  
 }
 
 bool FSTool::file::range(int index){
@@ -120,94 +117,90 @@ bool FSTool::file::range(int index){
 }
 
 int FSTool::file::add(std::string data){
-    if(!this->exists()){
+    if(!exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
     std::fstream *obj; // temp object 
-    obj = new std::fstream(this->_fullName, std::fstream::app | std::fstream::binary);
+    obj = new std::fstream(_fullName, std::fstream::app | std::fstream::binary);
     *obj << data << std::endl; // write
-    obj->close();              // save and close stream 
-    delete obj;                // free memory 
-    this->_lines++;
+    obj->close(); // save and close stream 
+    delete obj;   // free memory 
+    update();     // update information of file 
     return 0;
 }
 
 int FSTool::file::add(std::string data, int index){
-    if(!this->exists()){
+    if(!exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
-    if(index >= this->_lines || index < 0){
+    if(index >= _lines || index < 0){
         throw fs_exception("not valid index", -3);
     }
-    std::string *_buff = new std::string[this->_lines]; // temp buffeer
-    for(int i = 0; i < this->_lines; i++){
-        _buff[i] = this->get(i); // load file data to buff 
+    std::string *_buff = new std::string[_lines]; // temp buffeer
+    for(int i = 0; i < _lines; i++){
+        _buff[i] = get(i); // load file data to buff 
     }
     _buff[index] = data; // rewrite line 
-    int *linesTemp = new int(this->_lines); 
-    this->clear(); // delete data in file
+    int *linesTemp = new int(_lines); 
+    clear(); // delete data in file
     for(int i = 0; i < *linesTemp; i++){
-        this->add(_buff[i]); // load buf to file  
+        add(_buff[i]); // load buf to file  
     }
     delete[] _buff;
     delete linesTemp;
-    this->_lines++;
-    this->_size = resize();  // get new size from bites of file 
-    
+    update(); // update information of file 
     return 0; 
 }
 
 int FSTool::file::insert(std::string data, int index){
-    if(!this->exists()){
+    if(!exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
-    if(index >= this->_lines || index < 0){
+    if(index >= _lines || index < 0){
         throw fs_exception("not valid index", -3);
     }
-    std::string *_fdata = new std::string[this->_lines]; //buffer
-    for (int i = 0; i < this->_lines; i++) { // load data in file to array
-        _fdata[i] = this->get(i);
+    std::string *_fdata = new std::string[_lines]; //buffer
+    for (int i = 0; i < _lines; i++) { // load data in file to array
+        _fdata[i] = get(i);
     }
-    int *linesTemp = new int(this->_lines);
-    this->clear();
+    int *linesTemp = new int(_lines);
+    clear();
     for (int i = 0; i < *linesTemp; i++){
         if (i == index ){
-            this->add(data);// add data 
+            add(data);// add data 
         }
-        this->add(_fdata[i]);
+        add(_fdata[i]);
     }
     delete[] _fdata;
     delete linesTemp;
-    this->_lines++;
-    this->_size = resize(); // get new size from bites of file 
+    update(); // update information of file 
     return 0;
 }
 
 int FSTool::file::insert(std::string data, int index, int count){
-    if(!this->exists()){
+    if(!exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
-    if(index >= this->_lines || index < 0){
+    if(index >= _lines || index < 0){
         throw fs_exception("not valid index", -3);
     }
-    std::string *_fdata = new std::string[this->_lines]; //buffer
-    for (int i = 0; i < this->_lines; i++) { // load data in file to array
-        _fdata[i] = this->get(i);
+    std::string *_fdata = new std::string[_lines]; //buffer
+    for (int i = 0; i < _lines; i++) { // load data in file to array
+        _fdata[i] = get(i);
     }
-    int * linesTemp = new int(this->_lines);  // temp count lines
-    this->clear();
+    int * linesTemp = new int(_lines);  // temp count lines
+    clear();
     for (int i = 0; i < *linesTemp; i++){
         if (i == index ){
             for (int c = 0; c < count; c++){
-                this->add(data); // add data
+                add(data); // add data
             } 
         }
-        this->add(_fdata[i]);
+        add(_fdata[i]);
     }
     delete linesTemp;
     delete[] _fdata;
-    this->_lines++;
-    this->_size = resize(); // get new size from bites of file 
+    update(); // update information of file 
     return 0;
 }
 
@@ -222,7 +215,7 @@ void FSTool::file::copy(file &source){
     std::ifstream *src; // temp input
     std::ofstream *out; // temp output
     src = new std::ifstream(source.full_name(), std::ios::binary); // open input file
-    out = new std::ofstream(this->_fullName, std::ios::binary); // open source file 
+    out = new std::ofstream(_fullName, std::ios::binary); // open source file 
     *out << src->rdbuf(); // write data
     src->close(); // close streams 
 	out->close();
@@ -234,7 +227,7 @@ void FSTool::file::copy(std::string name){
     std::ifstream *src; // temp input
     std::ofstream *out; // temp output
     src = new std::ifstream(name, std::ios::binary); // open input file
-    out = new std::ofstream(this->_fullName, std::ios::binary); // open source file 
+    out = new std::ofstream(_fullName, std::ios::binary); // open source file 
     *out << src->rdbuf(); // write data
     src->close(); // close streams 
 	out->close();
@@ -243,7 +236,7 @@ void FSTool::file::copy(std::string name){
 }
 
 int FSTool::file::find(std::string object, int begin, int end){
-    if(!this->exists()){
+    if(!exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
     static int _find;
@@ -255,7 +248,7 @@ int FSTool::file::find(std::string object, int begin, int end){
         _object = object;
         _begin = begin;
         if(end == 0){
-            _end = this->_lines;
+            _end = _lines;
         }
         else{
             _end = end;
@@ -265,14 +258,14 @@ int FSTool::file::find(std::string object, int begin, int end){
         throw fs_exception("not valid search point",41);
     }
     if (_begin == _end){
-        if(this->get(begin).find(object)!=std::string::npos){
+        if(get(begin).find(object)!=std::string::npos){
             _find = begin;
             return begin;
         }
     }
     else{
         for (int i = _find;i < _end;i++){
-            if((this->get(i).find(object)!=std::string::npos)){
+            if((get(i).find(object)!=std::string::npos)){
                 _find = i + 1; // save point
                 return i;
             }
@@ -336,7 +329,7 @@ std::string FSTool::file::buff(int position, int size){
 }
 
 std::string FSTool::file::buff(){
-    return buff(0,this->_size);
+    return buff(0,_size);
 }
 
 void FSTool::file::write(std::string buff, int position){
@@ -355,7 +348,7 @@ void FSTool::file::write(std::string buff, int position){
         }
         bin->close(); // close stream
     }
-    _size = resize();
+    update(); // update information of file 
     delete bin;
 }
 
@@ -372,6 +365,6 @@ void FSTool::file::write(std::string buff){
         }
         bin->close(); // close stream
     }
-    _size = resize();
+    update(); // update information of file 
     delete bin;
 }
