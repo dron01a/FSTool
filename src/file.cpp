@@ -30,10 +30,10 @@ void FSTool::file::update(){
         delete buf;
         struct stat data;
         stat(this->_fullName.c_str(), &data);
-        this->_size = data.st_size;
-        this->_lmTime = gmtime(&data.st_mtime); // add time to struct
-        this->_lmTime->tm_mon += 1;             // fix month
-        this->_lmTime->tm_year += 1900;         // fix year
+        _size = data.st_size;
+        _lmTime = gmtime(&data.st_mtime); // add time to struct
+        _lmTime->tm_mon += 1;             // fix month
+        _lmTime->tm_year += 1900;         // fix year
     }
     delete obj;
 }
