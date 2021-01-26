@@ -5,5 +5,7 @@ code: -1  message: not found
 Rename: 
 code: -11 message: renaming error
 
-Index errors:
-code: -3 message: not valid index
+Inde/Size errors:
+code: -3 message: not valid index 
+code: 3  message: not valid position in file 
+code: 2  message: not valid size of buffer

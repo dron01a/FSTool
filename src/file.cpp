@@ -28,7 +28,6 @@ void FSTool::file::update(){
         obj->close(); // close file
         delete buf;
         delete obj;
-
         struct stat data;
         stat(this->_fullName.c_str(), &data);
         this->_size = data.st_size;
@@ -307,4 +306,72 @@ FSTool::strvect FSTool::file::get_elements_of_path(){
     delete next_token;
     delete temp;
     return elements;
+}
+
+std::string FSTool::file::buff(int position, int size){
+    if(!exists()){
+        throw fs_exception("file not found", -2); // if file on found 
+    }
+    if(position > _size || position < 0){
+        throw fs_exception("not valid position in file", 3); 
+    }
+    if( size > _size){
+        throw fs_exception("not valid size of buffer", 2); 
+    }
+    char * resBuff = new char[size + 1];
+    std::string result;
+    resBuff[size] = '\0';
+    std::ifstream *bin; // temp stream object 
+    bin = new std::ifstream(this->_fullName, std::ifstream::binary);
+    if (bin->good()){
+        bin->seekg(std::ios_base::beg); // move to position
+        bin->seekg(position);
+        bin->read(resBuff, size); // read bytes
+        bin->close(); // close stream
+    }
+    result = resBuff;
+    delete bin;
+    delete[] resBuff;
+    return result;
+}
+
+std::string FSTool::file::buff(){
+    return buff(0,this->_size);
+}
+
+void FSTool::file::write(std::string buff, int position){
+    if(!exists()){
+       throw fs_exception("file not found", -2); // if file on found 
+    }
+    if(position > _size || position < 0){
+        throw fs_exception("not valid position in file", 3); 
+    }
+    std::ofstream * bin; // temp stream object
+    bin = new std::ofstream(_fullName, std::ios_base::in | std::ios::binary);
+    if(bin->good()){
+        bin->seekp (position, std::ios::beg);
+        for (int byte = 0; byte < buff.size(); byte++){
+            bin->put(buff[byte]); // write bytes
+        }
+        bin->close(); // close stream
+    }
+    _size = resize();
+    delete bin;
+}
+
+void FSTool::file::write(std::string buff){
+    if(!exists()){
+       throw fs_exception("file not found", -2); // if file on found 
+    }
+    std::ofstream * bin; // temp stream object
+    bin = new std::ofstream(_fullName, std::ios_base::in | std::ios::binary);
+    if(bin->good()){
+        bin->seekp (std::ios::beg);
+        for (int byte = 0; byte < buff.size(); byte++){
+            bin->put(buff[byte]); // write bytes
+        }
+        bin->close(); // close stream
+    }
+    _size = resize();
+    delete bin;
 }
