@@ -6,25 +6,25 @@
 #endif
 
 bool FSTool::exists(std::string path){ 
-    if (access(path.c_str(), 0) !=0){
+    if (access(path.c_str(), 0) != 0){
 		return false; // if not exists 
     }
     return true; // if path found 
 }
 
 FSTool::_base::_base(std::string name, std::string path){
-    this->_updateFullName(path,name);
+    _updateFullName(path,name);
 }
 
 FSTool::_base::_base(std::string name){
-    this->_fullName = name;
-    int *find = new int(this->_fullName.find_last_of("/\\")); // split into file name and path
+    _fullName = name;
+    int *find = new int(_fullName.find_last_of("/\\")); // split into file name and path
     if(*find !=std::string::npos){
-        this->_path = this->_fullName.substr(0, *find);  // set path
-        this->_name = this->_fullName.substr(*find + 1); // set file name
+        _path = _fullName.substr(0, *find);  // set path
+        _name = _fullName.substr(*find + 1); // set file name
     }
     else{
-        this->_name = name;
+        _name = name;
     }
     delete find; // free memory 
 }
@@ -76,41 +76,68 @@ tm* FSTool::_base::last_modification(){
 }
 
 void FSTool::_base::rename(std::string newName){
-    int *res = new int(std::rename(_fullName.c_str(), newName.c_str()));
+    int *res = new int(std::rename(_fullName.c_str(), newName.c_str())); // get result of rename
     if(*res != 0){
         if(*res == ENOENT){
-            throw FSTool::fs_exception("not found", -1);
+            throw FSTool::fs_exception("not found", -1); 
         }
         throw FSTool::fs_exception("renaming error", -11);
     }
-    this->_updateFullName(this->_path,newName);
+    _updateFullName(_path,newName);
     delete res;
 }
 
 std::string FSTool::_base::front(){ 
-    return this->get(0); 
+    return get(0); //return first element
 }
 
 std::string FSTool::_base::at(int index) {
-    if ( this->range(index) ){
-        return this->get(index);
+    if (range(index)){
+        return get(index); // return element from index 
     }
-    throw FSTool::fs_exception("not valid index", -3); 
+    throw FSTool::fs_exception("not valid index", -3); // get exceprion 
 }
 
 void FSTool::_base::move(std::string path){
     if(!FSTool::exists(path)){
-        throw FSTool::fs_exception(path + " not found", -1);
+        throw FSTool::fs_exception(path + " not found", -1); 
     }
-    int *res = new int(std::rename(_fullName.c_str(), path.c_str()));
+    int *res = new int(std::rename(_fullName.c_str(), path.c_str())); // get result of rename
     if(*res != 0){
         if(*res == ENOENT){
             throw FSTool::fs_exception("not found", -1);
         }
         throw FSTool::fs_exception("renaming error", -11);
     }
-    this->_updateFullName(path,this->_name);
+    _updateFullName(path,_name);
     delete res;
+}
+
+FSTool::strvect FSTool::_base::pathSteps(){
+    strvect elements; 
+    std::string *temp = new std::string;
+    char* token, * next_token = NULL;
+#ifdef WIN32
+    char p[1024];
+	strcpy_s(p, _info->full_name.c_str());
+	token = strtok_s(p, "\\", &next_token);
+    elements.push_back(token);
+	for (int i = 0; token != NULL; token = strtok_s(NULL, "\\", &next_token), i++){
+        *temp = elements[i-1] + "\\" + token;
+#elif defined(unix)
+    char nameBuff[_fullName.length()];
+    strcpy(nameBuff, _fullName.c_str());
+    token = strtok(nameBuff, "/");
+    elements.push_back(token);
+    for (int i = 1; token != NULL; token = strtok(NULL, "/"), i++){
+        *temp = elements[i-1] + "/" + token;
+#endif
+		elements.push_back(*temp);
+    }
+	delete token; 
+    delete next_token;
+    delete temp;
+    return elements;
 }
 
 bool FSTool::_base::exists(){

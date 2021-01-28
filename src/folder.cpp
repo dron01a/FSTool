@@ -143,47 +143,11 @@ std::string FSTool::folder::back(){
     return this->get(this->_length); // return last element 
 }
 
-
-FSTool::strvect FSTool::folder::get_elements_of_path(){
-    strvect elem; 
-    std::string *temp = new std::string;
-    char* token = NULL;
-#ifdef WIN32
-    char * next_token = NULL;
-    char buff[1024];
-	strcpy_s(buff, _fullName.c_str());
-	token = strtok_s(buff, "\\", &next_token);
-    elem.push_back(token);
-    token = strtok(NULL,"\\",&next_token);
-    for(int i = 1;token != NULL; i++){
-        *temp = elem[i-1] + "\\" + token;
-        elem.push_back(*temp);
-        token = strtok(NULL,"\\",*next_token);
-    }
-    delete next_token;
-#elif defined(unix)
-    char buff[_fullName.length()];
-    strcpy(buff, _fullName.c_str());
-    token = strtok(buff,"/");
-    elem.push_back(token);
-    token = strtok(NULL,"/");
-    for(int i = 1;token != NULL; i++){
-        *temp = elem[i-1] + "/" + token;
-        elem.push_back(*temp);
-        token = strtok(NULL,"/");
-    }
-#endif
-	delete token; 
-    delete temp;
-    return elem;
-}
-
-
 int FSTool::folder::create(){
     if(exists()){
         throw fs_exception("folder already exists", -1);
     }
-    std::vector<std::string> path = get_elements_of_path();
+    std::vector<std::string> path = pathSteps();
 	for (int i = 0; i < path.size(); i++) {  
         mkdir(path[i].c_str(),0777); //create folders
     }

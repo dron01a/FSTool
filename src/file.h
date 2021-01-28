@@ -44,7 +44,6 @@ namespace FSTool {
         std::string back();         // return last string
         bool range(int index);      // check index
         void clear();               // deletes all data from the file
-        strvect get_elements_of_path();          // return elements of path
         int find(std::string object, int begin = 0, int end = 0); // find object in file
 
     private:
