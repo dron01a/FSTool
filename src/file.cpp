@@ -53,7 +53,7 @@ int FSTool::file::lines(){
 }
 
 int FSTool::file::create(){
-    if(this->exists()){
+    if(exists()){
         throw fs_exception("file already exists", -1);
     }
     std::ofstream *temp; // temp stream object
@@ -71,7 +71,7 @@ int FSTool::file::create(){
 }
 
 int FSTool::file::destroy(){
-    if(!this->exists()){
+    if(!exists()){
         throw fs_exception("file not found", -2);
     }
     return remove(_fullName.c_str()); // return result of deleting file
@@ -82,7 +82,7 @@ bool FSTool::file::empty(){
 }
 
 std::string FSTool::file::get(int index){
-    if(!this->exists()){
+    if(!exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
     if(index >= _lines || index < 0){

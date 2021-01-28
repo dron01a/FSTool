@@ -6,14 +6,14 @@
 #endif
 
 FSTool::folder::folder(std::string name) : FSTool::_base(name) {
-    if (this->exists()){
-        this->update();
+    if (exists()){
+        update();
     }
 }
 
 FSTool::folder::folder(std::string name, std::string path) : FSTool::_base(name,path) {
-    if (this->exists()){
-        this->update();
+    if (exists()){
+        update();
     }
 }
 
@@ -21,55 +21,55 @@ void FSTool::folder::update(){
     std::vector<time_t> changes;
 #ifdef WIN32
     struct _finddata_t data;
-    intptr_t done = _findfirst(this->_fullName.c_str(), &data);
-    this->_size += data.size;
+    intptr_t done = _findfirst(_fullName.c_str(), &data);
+    _size += data.size;
     while (_findnext(done, &data) == 0) {
-        this->_length++;
-    	if (data.attrib == _A_SUBDIR && this->_elements != 0) {
+        _length++;
+    	if (data.attrib == _A_SUBDIR && _elements != 0) {
             FSTool::folder * temp = new FSTool::folder(data.name); // temp object
-    		this->_size += temp->size();
-            this->_folders++;
-            this->_folders += temp->folders();
-            this->_files += temp->files();
+    		_size += temp->size();
+            _folders++;
+            _folders += temp->folders();
+            _files += temp->files();
             delete temp;
     	}else{
-            this->_files++;
-            this->_size += data.size;
+            _files++;
+            _size += data.size;
         }
     }
     _findclose(done);
 #elif defined (unix)
-    DIR *dir = opendir(this->_fullName.c_str());
+    DIR *dir = opendir(_fullName.c_str());
 	struct dirent *ent;
     struct stat data;
-    stat(this->_fullName.c_str(),&data);
+    stat(_fullName.c_str(),&data);
     while((ent = readdir(dir)) != NULL){
-	    stat((this->_fullName + "/" + ent->d_name).c_str(),&data);
-        this->_length++;
+	    stat((_fullName + "/" + ent->d_name).c_str(),&data);
+        _length++;
 	    if(S_ISDIR(data.st_mode)){
             if ( strcmp( ".", ent->d_name ) == 0 || strcmp( "..", ent->d_name ) == 0 ){
 			    continue;
             }
-            FSTool::folder * temp = new FSTool::folder(this->_fullName + "/" + ent->d_name); 
-			this->_size += temp->size();
-            this->_folders++;
-            this->_folders += temp->folders();
-            this->_files += temp->files();
+            FSTool::folder * temp = new FSTool::folder(_fullName + "/" + ent->d_name); 
+			_size += temp->size(); // get size of subdir
+            _folders++;
+            _folders += temp->folders(); // get count of folders in subdir
+            _files += temp->files(); // get count of files in subdir
             changes.push_back(mktime(temp->last_modification()));
             delete temp;
 		}
         else{
             tm * tempTime = localtime(&data.st_mtime);
-            this->_files++;
-	    	this->_size += data.st_size;
-            tempTime->tm_mon += 1;                // fix month
-            tempTime->tm_year += 1900;            // fix year
+            _files++;
+	    	_size += data.st_size;
+            tempTime->tm_mon += 1;     // fix month
+            tempTime->tm_year += 1900; // fix year
             changes.push_back(mktime(tempTime));
         }
 	}
 	closedir(dir);
 #endif
-    this->_elements += this->_files + this->_folders;// count elements
+    _elements += _files + _folders; // count elements
     time_t last;
     if (_elements == 0 ){
         last = time(NULL);
@@ -77,13 +77,13 @@ void FSTool::folder::update(){
     else{ 
         last = *std::max_element(changes.begin(),changes.end());
     }
-    this->_lmTime = localtime(&last);
+    _lmTime = localtime(&last);
     changes.clear();
 }
 
 bool FSTool::folder::empty(){
-    if(this->_length == 2){
-        return true;
+    if(_length == 2 && _size == 0){
+        return true; // folder empty 
     }
     return false;
 }
@@ -117,19 +117,20 @@ std::string FSTool::folder::get(int index){
 	struct _finddata_t data;
 	intptr_t done = _findfirst(this->_info->full_name.c_str(), &data);
 	while (_findnext(done, &data) == 0){
-		if (*inter == index){
+		if (inter == index){
             break;
         }
 		else{
-			(*inter)++;
+			inter++;
         }
-    }    result = data.name;
+    }    
+    result = data.name;
 #elif defined(unix)
 	DIR *dir = opendir(this->_fullName.c_str());
 	struct dirent *ent;
 	while((ent = readdir(dir)) != NULL){
 		if (inter == index){
-            result = ent->d_name;
+            result = ent->d_name; // add result
             break;
         }
 		inter++;
@@ -139,7 +140,7 @@ std::string FSTool::folder::get(int index){
 }
 
 std::string FSTool::folder::back(){
-    return this->get(this->_length);
+    return this->get(this->_length); // return last element 
 }
 
 
@@ -153,11 +154,11 @@ FSTool::strvect FSTool::folder::get_elements_of_path(){
 	strcpy_s(buff, _fullName.c_str());
 	token = strtok_s(buff, "\\", &next_token);
     elem.push_back(token);
-    token = strtok(NULL,"/",&next_token);
+    token = strtok(NULL,"\\",&next_token);
     for(int i = 1;token != NULL; i++){
-        *temp = elem[i-1] + "/" + token;
+        *temp = elem[i-1] + "\\" + token;
         elem.push_back(*temp);
-        token = strtok(NULL,"/",*next_token);
+        token = strtok(NULL,"\\",*next_token);
     }
     delete next_token;
 #elif defined(unix)
@@ -179,18 +180,18 @@ FSTool::strvect FSTool::folder::get_elements_of_path(){
 
 
 int FSTool::folder::create(){
-    if(this->exists()){
+    if(exists()){
         throw fs_exception("folder already exists", -1);
     }
-    std::vector<std::string> path = this->get_elements_of_path();
-	for (int i = 0; i < path.size(); i++) {//create folders
-        mkdir(path[i].c_str(),0777);
+    std::vector<std::string> path = get_elements_of_path();
+	for (int i = 0; i < path.size(); i++) {  
+        mkdir(path[i].c_str(),0777); //create folders
     }
     return 0;
 } 
 
 bool FSTool::folder::range(int index){
-    if(index > this->_length || index < 0 ){
+    if(index > _length || index < 0 ){
         return false;
     }
     else{
@@ -199,65 +200,65 @@ bool FSTool::folder::range(int index){
 }
 
 int FSTool::folder::destroy(){
-    if(!this->exists()){
+    if(!exists()){
         throw fs_exception("folder not found", -2); // if file exists
     }
 #ifdef WIN32
     struct _finddata_t data;
-	intptr_t done = _findfirst(this->full_name.c_str(), &data);
+	intptr_t done = _findfirst(full_name.c_str(), &data);
 	while (_findnext(done, &data) == 0) {;
-		if (data.attrib == _A_SUBDIR && this->_elements != 0) {
+		if (data.attrib == _A_SUBDIR && _elements != 0) {
 			if ( strcmp( ".", ent->d_name ) == 0 || strcmp( "..", ent->d_name ) == 0 ){
 			    continue;
             }
-			folder * temp = new folder(std::string(this->_info->full_name+ "\\" + ent->d_name).c_str());
+			folder * temp = new folder(std::string(_info->full_name+ "\\" + ent->d_name).c_str());
             temp->destroy(); // delete subdir 
             delete temp; 
-            _rmdir(std::string(this->_info->full_name+ "\\" + ent->d_name).c_str());
+            _rmdir(std::string(_info->full_name+ "\\" + ent->d_name).c_str());
 		}else{
-            remove(std::string(this->_info->full_name+ "\\" + ent->d_name).c_str());
+            remove(std::string(_info->full_name+ "\\" + ent->d_name).c_str());
         }
 	}
 	_findclose(done);
 #elif defined (unix)
-    DIR *dir = opendir(this->_fullName.c_str());
+    DIR *dir = opendir(_fullName.c_str());
 	struct dirent *ent;
     while((ent = readdir(dir)) != NULL){
 	    if(ent->d_type == DT_DIR){
             if ( strcmp( ".", ent->d_name ) == 0 || strcmp( "..", ent->d_name ) == 0 ){
 			    continue;
             }
-			folder * temp = new folder(std::string(this->_fullName + "/" + ent->d_name).c_str());
-            temp->destroy(); // delete subdir 
+			folder * temp = new folder(std::string(_fullName + "/" + ent->d_name));
+            temp->destroy(); // delete content in subdir 
             delete temp; 
             rmdir(std::string(_fullName + "/" + ent->d_name).c_str());
 		}
         else {
-			remove(std::string(this->_fullName+ "/" + ent->d_name).c_str());
+			remove(std::string(_fullName+ "/" + ent->d_name).c_str());
         }
 	}
     closedir(dir);
-    rmdir(this->_fullName.c_str());	
+    rmdir(_fullName.c_str()); // remove dir
 #endif
     return 0;
 }
 
-FSTool::strvect FSTool::folder::get_content_list(){
-    if(this->empty()){
+FSTool::strvect FSTool::folder::content(){
+    if(empty()){
         throw fs_exception("folder is empty", -321);
     }
-    if(!this->exists()){
+    if(!exists()){
         throw fs_exception("folder not found", -2); // if file exists
     }
     strvect result;
-    for(int i = 0; i < this->_length; i++){
-        result.push_back(this->get(i));
+    for(int i = 0; i < _length; i++){
+        result.push_back(get(i));
     }
     return result;
 }
 
 int FSTool::folder::find(std::string object, int begin, int end){
-    if(!this->exists()){
+    if(!exists()){
         throw fs_exception("folder not found", -2); // if file exists
     }
     static int _find;
@@ -279,14 +280,14 @@ int FSTool::folder::find(std::string object, int begin, int end){
         throw fs_exception("not valid search point",41);
     }
     if (_begin == _end){
-        if(this->get(begin).find(object)!=std::string::npos){
+        if(get(begin).find(object)!=std::string::npos){
             _find = begin;
             return begin;
         }
     }
     else{
         for (int i = _find;i < _end;i++){
-            if((this->get(i).find(object)!=std::string::npos)){
+            if((get(i).find(object)!=std::string::npos)){
                 _find = i + 1; // save point
                 return i;
             }
