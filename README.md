@@ -6,10 +6,10 @@ Linux/Windows filesystem tools<br/>
 
 'git clone https://github.com/ARmodRey/FSTool.git'
 
+## Examples
+
 class file(src/file.cpp) --> class for work with files<br/>
 files open binary mode, but work with lines and buffer`s<br/>
-
-## Examples
 
 ```C++
 #include "file.h"
