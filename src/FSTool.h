@@ -34,7 +34,7 @@ namespace FSTool{
         std::string _fullName;                 // name with path
         std::vector<filesystemFree> _subNodes; // child nofes
     };
-   
+    
 }; 
 
 #endif

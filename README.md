@@ -2,7 +2,14 @@
 Linux/Windows filesystem tools<br/>
 Сontains classes and functions for working with the file system.<br/>
 
+#### clone
+
+'git clone https://github.com/ARmodRey/FSTool.git'
+
 class file(src/file.cpp) --> class for work with files<br/>
+files open binary mode, but work with lines and buffer`s<br/>
+
+## Examples
 
 ```C++
 #include "file.h"
@@ -21,7 +28,7 @@ int main(){
 }
 ```
 
-class folder(src/folder.cpp) --> class for work with files<br/>
+class folder(src/folder.cpp) --> class for work with folder<br/>
 
 ```C++
 #include "folder.h"
