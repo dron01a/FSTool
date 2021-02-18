@@ -3,8 +3,14 @@ Linux/Windows filesystem tools<br/>
 Сontains classes and functions for working with the file system.<br/>
 
 #### clone
-
-'git clone https://github.com/ARmodRey/FSTool.git'
+    git clone https://github.com/ARmodRey/FSTool.git
+    
+#### make
+    git clone https://github.com/ARmodRey/FSTool.git
+    cd FSTool
+    mkdir build 
+    cd build 
+    cmake ../cmake 
 
 ## Examples
 
