@@ -99,9 +99,6 @@ std::string FSTool::_base::at(int index) {
 }
 
 void FSTool::_base::move(std::string path){
-    if(!FSTool::exists(path)){
-        throw FSTool::fs_exception(path + " not found", -1); 
-    }
     int *res = new int(std::rename(_fullName.c_str(), path.c_str())); // get result of rename
     if(*res != 0){
         if(*res == ENOENT){
