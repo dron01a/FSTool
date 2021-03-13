@@ -8,7 +8,7 @@
 namespace FSTool {
 
     // class for work with files
-    class file : public _base {
+    class file : public FST_object {
     public:
         // class construcnors
         file(std::string name, std::string path); // parameters: path to file and name of file
@@ -23,8 +23,7 @@ namespace FSTool {
         int insert(std::string data, int index, int count); // insert count line`s from index
 
         // clone data in other file
-        void copy(file &obj);        // clone file content in class object       
-        void copy(std::string name); // clone file from name          
+        void copy(file &obj);        // clone file content in class object     
 
         //  methods for get bytes in file
         std::string buff();                       // return all bytes in file

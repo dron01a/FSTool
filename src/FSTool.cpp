@@ -48,7 +48,7 @@ int FSTool::find(std::string name, std::string object, int begin, int end){
     if(_name != name ){
          _name = name;
     }
-    _base *temp;
+    FST_object *temp;
     if(is_file(name)){
         temp = new file(name);
     }

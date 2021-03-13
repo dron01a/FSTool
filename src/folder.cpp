@@ -5,13 +5,13 @@
 #define mkdir _mkdir;
 #endif
 
-FSTool::folder::folder(std::string name) : FSTool::_base(name) {
+FSTool::folder::folder(std::string name) : FSTool::FST_object(name) {
     if (exists()){
         update();
     }
 }
 
-FSTool::folder::folder(std::string name, std::string path) : FSTool::_base(name,path) {
+FSTool::folder::folder(std::string name, std::string path) : FSTool::FST_object(name,path) {
     if (exists()){
         update();
     }

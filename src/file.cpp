@@ -4,14 +4,14 @@
 #define stat _stat
 #endif
 
-FSTool::file::file(std::string name) : FSTool::_base(name) {
+FSTool::file::file(std::string name) : FSTool::FST_object(name) {
     _extension = extension();
     if(exists()){
         update();
     }
 }   
 
-FSTool::file::file(std::string name, std::string path) : FSTool::_base(name,path) {
+FSTool::file::file(std::string name, std::string path) : FSTool::FST_object(name,path) {
     _extension = extension();
     if(exists()){
         update();
@@ -215,18 +215,6 @@ void FSTool::file::copy(file &source){
     std::ifstream *src; // temp input
     std::ofstream *out; // temp output
     src = new std::ifstream(source.full_name(), std::ios::binary); // open input file
-    out = new std::ofstream(_fullName, std::ios::binary); // open source file 
-    *out << src->rdbuf(); // write data
-    src->close(); // close streams 
-	out->close();
-    delete src; // free memory
-    delete out;
-}
-
-void FSTool::file::copy(std::string name){
-    std::ifstream *src; // temp input
-    std::ofstream *out; // temp output
-    src = new std::ifstream(name, std::ios::binary); // open input file
     out = new std::ofstream(_fullName, std::ios::binary); // open source file 
     *out << src->rdbuf(); // write data
     src->close(); // close streams 

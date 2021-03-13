@@ -5,12 +5,13 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include "dirent.h"
 #elif defined(WIN32) // for windows
 #include "direct.h"
 #include "io.h"
 #include "dos.h"
 #endif
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -35,12 +36,12 @@ namespace FSTool {
     };
 
     //base class for folder and file
-    class _base : protected _baseINFO{
+    class FST_object : protected _baseINFO{
     public:
 
         // class constructors
-        _base(std::string name, std::string path); // parameters: path to object and name
-        _base(std::string name);                   // parameters: name
+        FST_object(std::string name, std::string path); // parameters: path to object and name
+        FST_object(std::string name);                   // parameters: name
 
         // virtual methods
         virtual std::string get(int index) = 0;     // get data fov index file system element
@@ -54,6 +55,11 @@ namespace FSTool {
         virtual bool empty() = 0;  // if file/folder empty
         virtual void update() = 0; // update info of file/folder
 
+#ifdef unix 
+        // moving/copy methods
+        void copy(std::string path); // copy file/folder
+        void move(std::string path); // move file/folder to path 
+#endif
         // non virtual methods
         int size();                       // return size of file/folder in bytes
         std::string full_name();          // return full name
@@ -62,7 +68,6 @@ namespace FSTool {
         void rename(std::string newName); // rename file/folder
         std::string front();              // return first element
         std::string at(int index);        // get data with check
-        void move(std::string path);      // move file/folder to path 
         bool exists();                    // checks the file/folder for existence
         tm * last_modification();         // return tm struct with date of last modification
         strvect pathSteps();              // return steps of path
@@ -73,12 +78,12 @@ namespace FSTool {
     };
 
     // comparison operators 
-    bool operator==(_base & objectA, _base & objectB);
-    bool operator>=(_base & objectA, _base & objectB);
-    bool operator<=(_base & objectA, _base & objectB);
-    bool operator!=(_base & objectA, _base & objectB);
-    bool operator<(_base & objectA, _base & objectB); 
-    bool operator>(_base & objectA, _base & objectB);
+    bool operator==(FST_object & objectA, FST_object & objectB);
+    bool operator>=(FST_object & objectA, FST_object & objectB);
+    bool operator<=(FST_object & objectA, FST_object & objectB);
+    bool operator!=(FST_object & objectA, FST_object & objectB);
+    bool operator<(FST_object & objectA, FST_object & objectB); 
+    bool operator>(FST_object & objectA, FST_object & objectB);
 }
 
 #endif
