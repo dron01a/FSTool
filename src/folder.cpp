@@ -259,3 +259,27 @@ int FSTool::folder::find(std::string object, int begin, int end){
     }
     return -1;
 }
+
+void FSTool::folder::move(std::string path){
+    if(!FSTool::exists(path)){
+        throw fs_exception("not found", -2);
+    }
+    folder *temp = new folder(_name, path); // temp obj to clone
+    temp->copy(_fullName);
+    delete temp;
+    this->destroy();
+#ifdef WIN32
+	if(path[path.length() -1] != '\\'){
+		_fullName = path + '\\' + _name;
+		_path += '\\';
+	}
+#elif defined(unix) 
+    if(path[path.length() -1] != '/'){
+		_fullName = path + '/' + _name;
+		_path += '/';
+	}
+#endif
+    else{
+		_fullName = path + _name;
+	}   
+}

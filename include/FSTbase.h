@@ -58,7 +58,7 @@ namespace FSTool {
 #ifdef unix 
         // moving/copy methods
         void copy(std::string path); // copy file/folder
-        void move(std::string path); // move file/folder to path 
+        void virtual move(std::string path); // move file/folder to path 
 #endif
         // non virtual methods
         int size();                       // return size of file/folder in bytes

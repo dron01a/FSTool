@@ -25,6 +25,11 @@ namespace FSTool {
         // clone data in other file
         void copy(file &obj);        // clone file content in class object     
 
+#ifdef unix 
+        // move file to path
+        void move(std::string path);
+#endif
+
         //  methods for get bytes in file
         std::string buff();                       // return all bytes in file
         std::string buff(int position, int size); // return buffer equal to size

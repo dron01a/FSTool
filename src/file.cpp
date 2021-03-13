@@ -329,3 +329,27 @@ void FSTool::file::write(std::string buff){
     update(); // update information of file 
     delete bin;
 }
+
+void FSTool::file::move(std::string path){
+    if(!FSTool::exists(path)){
+        throw fs_exception("not found", -2);
+    }
+    file * temp = new file(_name, path);
+    temp->copy(*this);
+    delete temp;
+    this->destroy();
+#ifdef WIN32
+	if(path[path.length() -1] != '\\'){
+		_fullName = path + '\\' + _name;
+		_path += '\\';
+	}
+#elif defined(unix) 
+    if(path[path.length() -1] != '/'){
+		_fullName = path + '/' + _name;
+		_path += '/';
+	}
+#endif
+    else{
+		_fullName = path + _name;
+	}
+}

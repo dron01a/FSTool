@@ -28,6 +28,11 @@ namespace FSTool{
         strvect content();          // return file`s name`s 
         int find(std::string object, int begin = 0, int end = 0); // find object in folder
 
+#ifdef unix 
+        // move file to path
+        void move(std::string path);
+#endif
+
     private:
         int _folders = 0;  // count of folders in folder
         int _files = 0;    // count of files in folder
