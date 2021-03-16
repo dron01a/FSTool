@@ -330,6 +330,8 @@ void FSTool::file::write(std::string buff){
     delete bin;
 }
 
+#ifdef unix
+
 void FSTool::file::move(std::string path){
     if(!FSTool::exists(path)){
         throw fs_exception("not found", -2);
@@ -337,7 +339,7 @@ void FSTool::file::move(std::string path){
     file * temp = new file(_name, path);
     temp->copy(*this);
     delete temp;
-    this->destroy();
+    destroy();
 #ifdef WIN32
 	if(path[path.length() -1] != '\\'){
 		_fullName = path + '\\' + _name;
@@ -353,3 +355,16 @@ void FSTool::file::move(std::string path){
 		_fullName = path + _name;
 	}
 }
+
+void FSTool::file::copy(std::string path ){
+    std::ifstream *src; // temp input
+    std::ofstream *out; // temp output
+    src = new std::ifstream( path, std::ios::binary); // open input file
+    out = new std::ofstream(_fullName, std::ios::binary); // open source file 
+    *out << src->rdbuf(); // write data
+    src->close(); // close streams 
+	out->close();
+    delete src; // free memory
+    delete out;
+}
+#endif

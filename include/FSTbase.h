@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "dirent.h"
+#include <fcntl.h>
 #elif defined(WIN32) // for windows
 #include "direct.h"
 #include "io.h"
@@ -57,8 +58,8 @@ namespace FSTool {
 
 #ifdef unix 
         // moving/copy methods
-        void copy(std::string path); // copy file/folder
-        void virtual move(std::string path); // move file/folder to path 
+        virtual void copy(std::string path) = 0; // copy file/folder
+        virtual void move(std::string path) = 0; // move file/folder to path 
 #endif
         // non virtual methods
         int size();                       // return size of file/folder in bytes

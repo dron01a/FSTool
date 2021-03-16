@@ -187,18 +187,21 @@ int FSTool::folder::destroy(){
 #elif defined (unix)
     DIR *dir = opendir(_fullName.c_str());
 	struct dirent *ent;
+    struct stat data;
     while((ent = readdir(dir)) != NULL){
-	    if(ent->d_type == DT_DIR){
-            if ( strcmp( ".", ent->d_name ) == 0 || strcmp( "..", ent->d_name ) == 0 ){
-			    continue;
-            }
-			folder * temp = new folder(std::string(_fullName + "/" + ent->d_name));
+        if ( strcmp( ".", ent->d_name ) == 0 || strcmp( "..", ent->d_name ) == 0 ){
+		    continue;
+        }
+        std::string curObj = _fullName + "/" + ent->d_name;
+        curObj = realpath(curObj.c_str(),NULL);
+        stat(curObj.c_str(), &data);
+	    if(S_ISDIR(data.st_mode)){
+			folder * temp = new folder(curObj);
             temp->destroy(); // delete content in subdir 
             delete temp; 
-            rmdir(std::string(_fullName + "/" + ent->d_name).c_str());
 		}
         else {
-			remove(std::string(_fullName+ "/" + ent->d_name).c_str());
+            unlink(curObj.c_str());
         }
 	}
     closedir(dir);
@@ -260,11 +263,16 @@ int FSTool::folder::find(std::string object, int begin, int end){
     return -1;
 }
 
+#ifdef unix
+
 void FSTool::folder::move(std::string path){
     if(!FSTool::exists(path)){
         throw fs_exception("not found", -2);
     }
     folder *temp = new folder(_name, path); // temp obj to clone
+    if(!temp->exists()){
+        temp->create();
+    }
     temp->copy(_fullName);
     delete temp;
     this->destroy();
@@ -283,3 +291,35 @@ void FSTool::folder::move(std::string path){
 		_fullName = path + _name;
 	}   
 }
+
+void FSTool::folder::copy(std::string path){
+    DIR *dir;
+    struct dirent *ent;
+    struct stat data;
+    if ((dir = opendir (path.c_str())) != NULL) {
+        while ((ent = readdir (dir)) != NULL) {
+            if (ent->d_name != std::string(".") && ent->d_name != std::string("..")){
+                stat(std::string(path + "/" + ent->d_name).c_str(), &data);
+                if(S_ISDIR(data.st_mode)){
+                    folder subdir(_fullName + "/" + ent->d_name);
+                    subdir.create();
+                    subdir.copy(path + "/" + ent->d_name);
+                }
+                else{
+                    char buff[data.st_size];
+                    FILE *in, *out;
+                    size_t n;
+                    in  = fopen(std::string(path + "/" + ent->d_name).c_str(), "rb");
+                    out = fopen(std::string(_fullName + "/" + ent->d_name).c_str(), "wb");
+                    while ( (n=fread(buff,1,BUFSIZ,in)) != 0 ) {
+                        fwrite( buff, 1, n, out );
+                    }
+                    fclose(in);
+                    fclose(out);
+                }
+            } 
+        }
+    }
+}
+
+#endif

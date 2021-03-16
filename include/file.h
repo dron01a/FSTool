@@ -28,6 +28,7 @@ namespace FSTool {
 #ifdef unix 
         // move file to path
         void move(std::string path);
+        void copy(std::string path);
 #endif
 
         //  methods for get bytes in file
