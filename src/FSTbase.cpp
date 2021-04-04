@@ -115,6 +115,7 @@ FSTool::strvect FSTool::FST_object::pathSteps(){
         strcpy(nameBuff, _fullName.c_str());
         token = strtok(nameBuff, "/");
         elements.push_back(token);
+        token = strtok(NULL, "/");
         for (int i = 1; token != NULL; token = strtok(NULL, "/"), i++){
             *temp = elements[i-1] + "/" + token;
 #endif
