@@ -1,4 +1,4 @@
-#include "src/file.h"
+#include "file.h"
 #include "iostream"
 
 using namespace FSTool;

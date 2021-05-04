@@ -32,12 +32,14 @@ namespace FSTool {
 #endif
 
         //  methods for get bytes in file
-        std::string buff();                       // return all bytes in file
-        std::string buff(int position, int size); // return buffer equal to size
+        std::string buff();                                 // return all bytes in file
+        std::string buff(int position, int size);           // return buffer equal to size
+        void buff(char* buff, int size, int position = 0); // set to char buffer 
 
         // methods for writing bytes to file
         void write(std::string buff, int position); // write buff to special position in file
         void write(std::string buff);               // write buff begin position in file
+        void write(char* buff, int size, int position = 0);
 
         int create();               // create file in directory
         int destroy();              // delete file

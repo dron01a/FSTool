@@ -39,12 +39,10 @@ void FSTool::file::update(){
 }
 
 std::string FSTool::file::extension(){
-    int * found; // position of '.'
-    found = new int(_fullName.find_first_of("."));
-    if(*found != std::string::npos){
-        return _fullName.substr(*found + 1, _fullName.size() - *found);
+    int found = _fullName.find_first_of("."); // position of '.'
+    if(found != std::string::npos){
+        return _fullName.substr(found + 1, _fullName.size() - found);
     }
-    delete found;
     return ""; 
 }
 
@@ -56,18 +54,18 @@ int FSTool::file::create(){
     if(exists()){
         throw fs_exception("file already exists", -1);
     }
+    int result = 0;
     std::ofstream *temp; // temp stream object
     temp = new std::ofstream(_fullName.c_str(), std::fstream::binary); // create temp object
     if (!temp->is_open()){
-        delete temp;   // free memory
-        return 1;      // return code
+        result = 1; // set result code
     }
     else{
         temp->close(); // close stream
-        delete temp;   // free memory
         update();      // update information of file 
-        return 0;      // return code
     }
+    delete temp; // free memory
+    return result;
 }
 
 int FSTool::file::destroy(){
@@ -368,3 +366,48 @@ void FSTool::file::copy(std::string path ){
     delete out;
 }
 #endif
+
+void FSTool::file::buff(char* buff, int size, int position = 0){
+    if(!exists()){
+        throw fs_exception("file not found", -2); // if file on found 
+    }
+    if(position > _size || position < 0){
+        throw fs_exception("not valid position in file", 3); 
+    }
+    if( size > _size){
+        throw fs_exception("not valid size of buffer", 2); 
+    }
+    std::ifstream *bin; // temp stream object 
+    bin = new std::ifstream(this->_fullName, std::ifstream::binary);
+    if (bin->good()){
+        bin->seekg(std::ios_base::beg); // move to position
+        bin->seekg(position);
+        bin->read(buff, size); // read bytes
+        bin->close(); // close stream
+    }
+    delete bin;
+}
+
+void FSTool::file::write(char* buff, int size, int position = 0){
+    if(!exists()){
+        throw fs_exception("file not found", -2); // if file on found 
+    }
+    if(position > _size || position < 0){
+        throw fs_exception("not valid position in file", 3); 
+    }
+    if( size > _size){
+        throw fs_exception("not valid size of buffer", 2); 
+    }
+    std::ofstream * bin; // temp stream object
+    bin = new std::ofstream(_fullName, std::ios_base::in | std::ios::binary);
+    if(bin->good()){
+        bin->seekp(std::ios::beg);
+        bin->seekp(position);
+        for (int byte = 0; byte < size; byte++){
+            bin->put(buff[byte]); // write bytes
+        }
+        bin->close(); // close stream
+    }
+    update(); // update information of file 
+    delete bin; 
+}
