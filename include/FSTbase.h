@@ -55,6 +55,7 @@ namespace FSTool {
         virtual int destroy() = 0; // delete file/folder
         virtual bool empty() = 0;  // if file/folder empty
         virtual void update() = 0; // update info of file/folder
+        virtual void clear() = 0; // dastroy data in object
 
 #ifdef unix 
         // moving/copy methods

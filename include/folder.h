@@ -19,6 +19,7 @@ namespace FSTool{
         int lenght();   // return count of elemtns in parent dir 
 
         int create();               // create folder in directory
+        void clear();               // destroy data in folder 
         int destroy();              // delete folder
         bool empty();               // if folder empty
         void update();              // update information

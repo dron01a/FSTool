@@ -322,4 +322,9 @@ void FSTool::folder::copy(std::string path){
     }
 }
 
+void FSTool::folder::clear(){
+    destroy();
+    create();
+}
+
 #endif
