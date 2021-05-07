@@ -7,6 +7,9 @@
 
 namespace FSTool{
     
+    // return type-checked object
+    FST_object* open(std::string name);
+
     //check functions 
     bool is_file(std::string file_name);
     bool is_folder(std::string folder_name);

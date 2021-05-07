@@ -1,11 +1,12 @@
 Not found:
 code: -2  message: file/folder not found
 code: -1  message: not found
+code: -1  message: error type
 
 Rename: 
 code: -11 message: renaming error
 
-Inde/Size errors:
+Index/Size errors:
 code: -3 message: not valid index 
 code: 3  message: not valid position in file 
 code: 2  message: not valid size of buffer

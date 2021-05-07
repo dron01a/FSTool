@@ -5,6 +5,21 @@
 #define access _access;
 #endif
 
+FSTool::FST_object* FSTool::open(std::string name){
+    if(exists(name)){
+        if(is_file(name)){
+            return new file(name);
+        }
+        else if(is_folder){
+            return new folder(name);
+        }
+        else{
+            throw fs_exception("error type",-1);
+        }
+    }
+    throw fs_exception("not found", -1); // if file folder not exists
+}
+
 bool FSTool::is_file(std::string file_name){
 #if defined(WIN32)
     struct _stat fl_stat;
