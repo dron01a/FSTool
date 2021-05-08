@@ -415,4 +415,7 @@ MigrationBackup /
 # Ionide (кросс-платформенная F # VS Code tools) рабочая папка
 .ionide /
 
+./poligon/
+poligon
+
 # Конец https://www.toptal.com/developers/gitignore/api/linux,windows,visualstudiocode,visualstudio
