@@ -5,14 +5,22 @@
 #endif
 
 FSTool::file::file(std::string name) : FSTool::FST_object(name) {
-    _extension = extension();
+    int found = _fullName.find(".");    // position of '.'
+    _extension = "";
+    if(found != std::string::npos){
+        _extension = _fullName.substr(found + 1, _fullName.size() - found - 1);
+    }
     if(exists()){
         update();
     }
 }   
 
 FSTool::file::file(std::string name, std::string path) : FSTool::FST_object(name,path) {
-    _extension = extension();
+    int found = _fullName.find(".");    // position of '.'
+    _extension = "";
+    if(found != std::string::npos){
+        _extension = _fullName.substr(found + 1, _fullName.size() - found - 1);
+    }
     if(exists()){
         update();
     }
@@ -39,11 +47,7 @@ void FSTool::file::update(){
 }
 
 std::string FSTool::file::extension(){
-    int found = _fullName.find_first_of("."); // position of '.'
-    if(found != std::string::npos){
-        return _fullName.substr(found + 1, _fullName.size() - found);
-    }
-    return ""; 
+    return _extension; 
 }
 
 int FSTool::file::lines(){
