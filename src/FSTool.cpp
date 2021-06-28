@@ -75,7 +75,7 @@ int FSTool::find(std::string name, std::string object, int begin, int end){
     return result;
 }
 
-FSTool::filesystemFree::filesystemFree(std::string name){
+FSTool::FSToken::FSToken(std::string name){
     if (is_folder(name)){   
         folder * temp = new FSTool::folder(name); // temp object as folder
         this-> _type = "folder"; // set type;
@@ -85,7 +85,7 @@ FSTool::filesystemFree::filesystemFree(std::string name){
             if(strcmp(temp->get(i).c_str(),".") == 0 || strcmp(temp->get(i).c_str(),"..") == 0){
                 continue; // skip .. and . 
             }
-            _subNodes.push_back(FSTool::filesystemFree(name + "/" + temp->get(i)));
+            _subNodes.push_back(FSTool::FSToken(name + "/" + temp->get(i)));
         }
         delete temp; 
     }
@@ -99,35 +99,35 @@ FSTool::filesystemFree::filesystemFree(std::string name){
     this->_fullName = name; 
 }
 
-FSTool::filesystemFree::~filesystemFree(){
+FSTool::FSToken::~FSToken(){
     _subNodes.clear();
 }
 
-int FSTool::filesystemFree::countNodes(){
+int FSTool::FSToken::countNodes(){
     return _subNodes.size();
 }
 
-int FSTool::filesystemFree::size(){
+int FSTool::FSToken::size(){
     return _size;
 }
 
-FSTool::filesystemFree FSTool::filesystemFree::get(int index){
+FSTool::FSToken FSTool::FSToken::get(int index){
     return _subNodes[index];
 }
 
-std::string FSTool::filesystemFree::type(){
+std::string FSTool::FSToken::type(){
     return _type;
 }
 
-std::string FSTool::filesystemFree::name(){
+std::string FSTool::FSToken::name(){
     return _name;
 }
 
-std::string FSTool::filesystemFree::full_name(){
+std::string FSTool::FSToken::full_name(){
     return _fullName;
 }
 
-bool FSTool::filesystemFree::have(std::string name){
+bool FSTool::FSToken::have(std::string name){
     for (int i = 0; i < _subNodes.size(); i++){
         if(_subNodes[i].name() == name){
             return true;
@@ -142,7 +142,7 @@ bool FSTool::filesystemFree::have(std::string name){
     return false;
 }
 
-std::string FSTool::filesystemFree::getPath(std::string object){
+std::string FSTool::FSToken::getPath(std::string object){
     std::string result;
     if(!have(object)){
         throw fs_exception("not found", 1);
@@ -161,4 +161,13 @@ std::string FSTool::filesystemFree::getPath(std::string object){
         }
     }
     return result;
+}
+
+FSTool::FST_object* FSTool::FSToken::getObject(int index){
+    if(_subNodes[index].type() == "file"){
+        return new FSTool::file(_subNodes[index].full_name());
+    }
+    if(_subNodes[index].type() == "folder"){
+        return new FSTool::folder(_subNodes[index].full_name());
+    }
 }

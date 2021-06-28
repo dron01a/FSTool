@@ -55,8 +55,7 @@ namespace FSTool {
 
     private:
         std::string _extension; // file extension
-        int _lines = 0;         // get count strings in file
-    
+        int _lines = 0;         // get count strings in file   
     };
 
 };
