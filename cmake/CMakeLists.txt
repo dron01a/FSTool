@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 project(FSTLib VERSION 0.2.1 LANGUAGES C CXX)
 
-include_directories(../include) # add include dir
+include_directories(../include/) # add include dir
 
 # set C++ flags 
 set(CMAKE_CXX_STANDARD 17)

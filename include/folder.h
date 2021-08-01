@@ -8,9 +8,20 @@ namespace FSTool{
     // class for work with folders
     class folder : public FST_object{
     public:
+
         // class construcnors
-        folder(std::string name, std::string path); // parameters: path to folder and name of folder
-        folder(std::string name);                   // parameters: name of folder
+        /*
+            class constructor
+            @param name: name of folder 
+            @param path: path of folder 
+        */ 
+        folder(std::string name, std::string path); 
+        
+        /*
+            class constructor
+            @param name: name of folder 
+        */
+        folder(std::string name);
 
         // return information of folder
         int folders();  // return count of folders
@@ -18,20 +29,45 @@ namespace FSTool{
         int elements(); // return count of elements in folder
         int lenght();   // return count of elemtns in parent dir 
 
-        int create();               // create folder in directory
-        void clear();               // destroy data in folder 
-        int destroy();              // delete folder
-        bool empty();               // if folder empty
-        void update();              // update information
-        std::string get(int index); // return name of element in folder from index
-        std::string back();         // return last element
-        bool range(int index);      // check index
-        strvect content();          // return file`s name`s 
-        int find(std::string object, int begin = 0, int end = 0); // find object in folder
+        /*
+            return name of element in folder from index
+            @param index: position
+        */
+        std::string get(int index); 
+
+        /*
+            check index
+            @param index: position
+        */
+        bool range(int index);  
+
+        /*
+            find object in folder
+            @param object: object from find 
+            @param begin: start position 
+            @param end: stop position
+        */
+        int find(std::string object, int begin = 0, int end = 0);
+        
+        int create();       // create folder in directory
+        void clear();       // destroy data in folder 
+        int destroy();      // delete folder
+        bool empty();       // if folder empty
+        void update();      // update information
+        std::string back(); // return last element
+        strvect content();  // return file`s name`s 
 
 #ifdef unix 
-        // move file to path
+        /*
+            move folder to path 
+            @param path: move path
+        */ 
         void move(std::string path);
+        
+        /*
+            copy folder to path 
+            @param path: copy path
+        */ 
         void copy(std::string path);
 #endif
 

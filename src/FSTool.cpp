@@ -171,3 +171,25 @@ FSTool::FST_object* FSTool::FSToken::getObject(int index){
         return new FSTool::folder(_subNodes[index].full_name());
     }
 }
+
+int FSTool::FSToken::count(std::string name, bool allEnt){
+    int result = 0;
+    if(this->have(name)){
+        for(int count = 0; count < _subNodes.size(); count++){
+            if(allEnt){
+                if(_subNodes[count].name().find(name) == std::string::npos){
+                    result++;
+                }
+            }
+            else{
+                if(_subNodes[count].name() == name){
+                    result++;
+                }
+            }
+            if(_subNodes[count].type() == "folder"){
+                result += _subNodes[count].count(name);
+            }
+        }
+    }
+    return result;
+}

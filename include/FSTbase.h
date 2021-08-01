@@ -21,7 +21,11 @@
 
 namespace FSTool {
 
-    bool exists(std::string name); // search file/folder
+    /*
+        search file/folder
+        @param name: name of file/folder
+    */ 
+    bool exists(std::string name); 
 
     typedef std::vector<std::string> strvect;
 
@@ -40,36 +44,81 @@ namespace FSTool {
     class FST_object : protected _baseINFO{
     public:
 
-        // class constructors
-        FST_object(std::string name, std::string path); // parameters: path to object and name
-        FST_object(std::string name);                   // parameters: name
+        /*
+            class constructor
+            @param name: name of object 
+            @param path: path of object 
+        */ 
+        FST_object(std::string name, std::string path); 
+        
+        /*
+            class constructor
+            @param name: name of object 
+        */ 
+        FST_object(std::string name);
 
         // virtual methods
-        virtual std::string get(int index) = 0;     // get data fov index file system element
-        virtual std::string back() = 0;             // return last element
-        virtual bool range(int index) = 0;          // check index
+        /*
+            get data fov index file system element
+            @param index: position
+        */
+        virtual std::string get(int index) = 0;    
+
+        /*
+            check index
+            @param index: position
+        */
+        virtual bool range(int index) = 0;
+
+        /*
+            get from index
+            @param object: object from find 
+            @param begin: start position 
+            @param end: stop position
+        */
         virtual int find(std::string object, int begin = 0, int end = 0) = 0;
+
+        virtual std::string back() = 0; // return last element
         
         // methods for controlling the state of a folder/file
         virtual int create() = 0;  // create file/folde in directory
         virtual int destroy() = 0; // delete file/folder
         virtual bool empty() = 0;  // if file/folder empty
         virtual void update() = 0; // update info of file/folder
-        virtual void clear() = 0; // dastroy data in object
+        virtual void clear() = 0;  // dastroy data in object
 
 #ifdef unix 
         // moving/copy methods
-        virtual void copy(std::string path) = 0; // copy file/folder
-        virtual void move(std::string path) = 0; // move file/folder to path 
+        /*
+            copy file/folder to path 
+            @param path: copy path
+        */ 
+        virtual void copy(std::string path) = 0; 
+        
+        /*
+            move file/folder to path 
+            @param path: move path
+        */ 
+        virtual void move(std::string path) = 0;  
 #endif
         // non virtual methods
+        /*
+            rename file/folder
+            @param newName: new name of file/folder
+        */ 
+        void rename(std::string newName); 
+
+        /*
+            get data with check
+            @param index: position
+        */ 
+        std::string at(int index);        
+        
         int size();                       // return size of file/folder in bytes
         std::string full_name();          // return full name
         std::string name();               // return name
         std::string path();               // return path
-        void rename(std::string newName); // rename file/folder
         std::string front();              // return first element
-        std::string at(int index);        // get data with check
         bool exists();                    // checks the file/folder for existence
         tm * last_modification();         // return tm struct with date of last modification
         strvect pathSteps();              // return steps of path
