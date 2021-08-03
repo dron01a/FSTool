@@ -123,18 +123,21 @@ namespace FSTool {
         */
         int find(std::string object, int begin = 0, int end = 0);
         
-        int create();               // create file in directory
-        int destroy();              // delete file
-        bool empty();               // if file empty
-        void update();              // update information
-        std::string extension();    // return extension of file
-        int lines();                // return count of lines
-        std::string back();         // return last string
-        void clear();               // deletes all data from the file
+        int create();            // create file in directory
+        int destroy();           // delete file
+        bool empty();            // if file empty
+        void update();           // update information
+        std::string extension(); // return extension of file
+        int lines();             // return count of lines
+        std::string back();      // return last string
+        void clear();            // deletes all data from the file
+
+        mode_t type(); // return type of file
 
     private:
         std::string _extension; // file extension
-        int _lines = 0;         // get count strings in file   
+        int _lines = 0;         // get count strings in file  
+        mode_t _type;           // constant of file type 
     };
 
 };

@@ -39,6 +39,7 @@ void FSTool::file::update(){
         struct stat data;
         stat(this->_fullName.c_str(), &data);
         _size = data.st_size;
+        _type = data.st_mode;
         _lmTime = gmtime(&data.st_mtime); // add time to struct
         _lmTime->tm_mon += 1;             // fix month
         _lmTime->tm_year += 1900;         // fix year
@@ -389,4 +390,8 @@ void FSTool::file::write(char* buff, int size, int position = 0){
     }
     update(); // update information of file 
     delete bin; 
+}
+
+mode_t FSTool::file::type(){
+    return _type;
 }
