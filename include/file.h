@@ -37,21 +37,13 @@ namespace FSTool {
         */
         int add(std::string data, int index); 
 
-        // insert string line to file 
-        /*
-            insert line from index
-            @param data: information to add to file
-            @param index: number of line
-        */ 
-        int insert(std::string data, int index);            
-        
         /*
             insert line from index
             @param data: information to add to file
             @param index: number of line
             @param count: number of inserts
         */ 
-        int insert(std::string data, int index, int count); 
+        int insert(std::string data, int index, int count = 1); 
 
         /*
             clone file content in class object
@@ -95,7 +87,7 @@ namespace FSTool {
             @param buff: string with information 
             @param position: position in file
         */ 
-        void write(std::string buff, int position); 
+        void write(std::string buff, int position = 0); 
 
         /*
             write buff begin position in file

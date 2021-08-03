@@ -154,31 +154,6 @@ int FSTool::file::add(std::string data, int index){
     return 0; 
 }
 
-int FSTool::file::insert(std::string data, int index){
-    if(!exists()){
-        throw fs_exception("file not found", -2); // if file exists
-    }
-    if(index >= _lines || index < 0){
-        throw fs_exception("not valid index", -3);
-    }
-    std::string *_fdata = new std::string[_lines]; //buffer
-    for (int i = 0; i < _lines; i++) { // load data in file to array
-        _fdata[i] = get(i);
-    }
-    int *linesTemp = new int(_lines);
-    clear();
-    for (int i = 0; i < *linesTemp; i++){
-        if (i == index ){
-            add(data);// add data 
-        }
-        add(_fdata[i]);
-    }
-    delete[] _fdata;
-    delete linesTemp;
-    update(); // update information of file 
-    return 0;
-}
-
 int FSTool::file::insert(std::string data, int index, int count){
     if(!exists()){
         throw fs_exception("file not found", -2); // if file exists
