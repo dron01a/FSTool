@@ -5,6 +5,8 @@
 #include "FSexception.h"
 #include <fstream>
 
+#define END_OF_FILE -1
+
 namespace FSTool {
 
     // class for work with files
@@ -37,13 +39,13 @@ namespace FSTool {
         */
         int add(std::string data, int index); 
 
-        /*
-            insert line from index
-            @param data: information to add to file
-            @param index: number of line
-            @param count: number of inserts
-        */ 
-        int insert(std::string data, int index, int count = 1); 
+       // /*
+       //     insert line from index
+       //     @param data: information to add to file
+       //     @param index: number of line
+       //     @param count: number of inserts
+       // */ 
+       // virtual int insert(std::string data, int index, int count = 1) = 0; 
 
         /*
             clone file content in class object
@@ -65,20 +67,6 @@ namespace FSTool {
         void copy(std::string path);
 #endif
 
-        //  methods for get bytes in file
-        /*
-            return buffer equal to size
-            @param position: position in file
-            @param size: size from bytes to copyng to buffer
-        */ 
-        std::string buff(int position, int size);      
-        /*
-            set to char buffer
-            @param buff: char buffer 
-            @param size: buffer size 
-            @param position: position in file
-        */     
-        void buff(char* buff, int size, int position = 0);
         std::string buff(); // return all bytes in file
 
         // methods for writing bytes to file
@@ -87,13 +75,7 @@ namespace FSTool {
             @param buff: string with information 
             @param position: position in file
         */ 
-        void write(std::string buff, int position = 0); 
-
-        /*
-            write buff begin position in file
-            @param buff: string with information 
-        */ 
-        void write(std::string buff);
+        virtual void write(std::string buff, int position = END_OF_FILE) = 0; 
 
         /*
             write buff begin position in file
@@ -101,14 +83,21 @@ namespace FSTool {
             @param size: buffer size 
             @param position: position in file
         */     
-        void write(char* buff, int size, int position = 0);
+        virtual void write(char* buff, int size, int position = 0) = 0;
 
+         // virtual methods
         /*
-            return string in file from index
-            @param index: number of line
+            get data fov index file system element
+            @param index: position
         */
-        std::string get(int index); 
-        
+        virtual std::string get(int index) = 0;   
+        /*
+            return buffer equal to size
+            @param position: position in file
+            @param size: size from bytes to copyng to buffer
+        */ 
+        virtual std::string get(int position, int size); 
+
         /*
             check index
             @param index: position
@@ -121,23 +110,168 @@ namespace FSTool {
             @param begin: start position 
             @param end: stop position
         */
-        int find(std::string object, int begin = 0, int end = 0);
+        virtual int find(std::string object, int begin = 0, int end = 0) = 0;
+        
+        virtual void update() = 0;   // update information
         
         int create();            // create file in directory
         int destroy();           // delete file
         bool empty();            // if file empty
-        void update();           // update information
         std::string extension(); // return extension of file
         int lines();             // return count of lines
         std::string back();      // return last string
         void clear();            // deletes all data from the file
-
-        mode_t type(); // return type of file
-
+        mode_t type();           // return type of file
     private:
         std::string _extension; // file extension
-        int _lines = 0;         // get count strings in file  
         mode_t _type;           // constant of file type 
+    };
+
+
+
+    class binary_file : public file {
+    public:
+
+        // methods for writing bytes to file
+        /*  
+            write buff begin position in file
+            @param buff: string with information 
+            @param position: position in file
+        */ 
+        void write(std::string buff, int position = END_OF_FILE);
+        /*
+            write buff begin position in file
+            @param buff: char buffer 
+            @param size: buffer size 
+            @param position: position in file
+        */     
+        void write(char* buff, int size, int position = 0);
+
+        /*
+            insert line from index
+            @param data: information to add to file
+            @param index: number of line
+            @param count: number of inserts
+        */ 
+       // int insert(std::string data, int index, int count = 1); 
+        
+        /*
+            get data fov index file system element
+            @param index: position
+        */
+        std::string get(int index);  
+        /*
+            return buffer equal to size
+            @param position: position in file
+            @param size: size from bytes to copyng to buffer
+        */ 
+        virtual std::string get(int position, int size); 
+        /*
+            set to char buffer
+            @param buff: char buffer 
+            @param size: buffer size 
+            @param position: position in file
+        */     
+        void get(char* buff, int size, int position = 0);
+
+        /*
+            find object in file
+            @param object: object from find 
+            @param begin: start position 
+            @param end: stop position
+        */
+        int find(std::string object, int begin = 0, int end = 0);
+
+        void update();   // update information
+    private:
+        // class construcnors
+        /*
+            class constructor
+            @param name: name of file 
+            @param path: path of file 
+        */ 
+        binary_file(std::string name, std::string path); 
+
+        /*
+            class constructor
+            @param name: name of file 
+        */
+        binary_file(std::string name);      
+        friend class file;
+    };
+
+
+
+    class text_file : public file {
+    public:
+
+        // methods for writing bytes to file
+        /*  
+            write buff begin position in file
+            @param buff: string with information 
+            @param position: position in file
+        */ 
+        void write(std::string buff, int position = END_OF_FILE);
+        /*
+            write buff begin position in file
+            @param buff: char buffer 
+            @param size: buffer size 
+            @param position: position in file
+        */     
+        void write(char* buff, int size, int position = 0);
+
+        /*
+            insert line from index
+            @param data: information to add to file
+            @param index: number of line
+            @param count: number of inserts
+        */ 
+        //int insert(std::string data, int index, int count = 1); 
+
+        /*
+            return string in file from index
+            @param index: number of line
+        */
+        std::string get(int index); 
+         /*
+            return buffer equal to size
+            @param position: position in file
+            @param size: size from bytes to copyng to buffer
+        */ 
+        std::string get(int position, int size); 
+        /*
+            set to char buffer
+            @param buff: char buffer 
+            @param size: buffer size 
+            @param position: position in file
+        */     
+        void get(char* buff, int size, int position = 0);
+
+        /*
+            find object in file
+            @param object: object from find 
+            @param begin: start position 
+            @param end: stop position
+        */
+        int find(std::string object, int begin = 0, int end = 0);
+
+        void update();   // update information
+    private:
+        // class construcnors
+        /*
+            class constructor
+            @param name: name of file 
+            @param path: path of file 
+        */ 
+        text_file(std::string name, std::string path); 
+
+        /*
+            class constructor
+            @param name: name of file 
+        */
+        text_file(std::string name);      
+
+        friend class file;
     };
 
 };
