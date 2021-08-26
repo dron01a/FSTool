@@ -26,18 +26,18 @@ namespace FSTool {
         */
         file(std::string name);                   
 
-        // edit/add data(string) to file 
-        /*
-            add data to end file
-            @param data: information to add to file
-        */
-        int add(std::string data);
-        /*
-            edit data in line
-            @param data: information to add to file
-            @param index: number of line 
-        */
-        int add(std::string data, int index); 
+        // // edit/add data(string) to file 
+        // /*
+        //     add data to end file
+        //     @param data: information to add to file
+        // */
+        // int add(std::string data);
+        // /*
+        //     edit data in line
+        //     @param data: information to add to file
+        //     @param index: number of line 
+        // */
+        // int add(std::string data, int index); 
 
        // /*
        //     insert line from index
@@ -165,7 +165,7 @@ namespace FSTool {
             @param position: position in file
             @param size: size from bytes to copyng to buffer
         */ 
-        virtual std::string get(int position, int size); 
+        std::string get(int position, int size); 
         /*
             set to char buffer
             @param buff: char buffer 
