@@ -58,7 +58,7 @@ std::string FSTool::file::back(){
 }
 
 bool FSTool::file::range(int index){
-    if (index < 0 || index > _lines){
+    if (index < 0 || index > _size){
         return false; // if index not in range
     }
     else{
@@ -66,32 +66,32 @@ bool FSTool::file::range(int index){
     }
 }
 
-int FSTool::file::insert(std::string data, int index, int count){
-    if(!exists()){
-        throw fs_exception("file not found", -2); // if file exists
-    }
-    if(index >= _lines || index < 0){
-        throw fs_exception("not valid index", -3);
-    }
-    std::string *_fdata = new std::string[_lines]; //buffer
-    for (int i = 0; i < _lines; i++) { // load data in file to array
-        _fdata[i] = get(i);
-    }
-    int * linesTemp = new int(_lines);  // temp count lines
-    clear();
-    for (int i = 0; i < *linesTemp; i++){
-        if (i == index ){
-            for (int c = 0; c < count; c++){
-                add(data); // add data
-            } 
-        }
-        add(_fdata[i]);
-    }
-    delete linesTemp;
-    delete[] _fdata;
-    update(); // update information of file 
-    return 0;
-}
+// int FSTool::file::insert(std::string data, int index, int count){
+//     if(!exists()){
+//         throw fs_exception("file not found", -2); // if file exists
+//     }
+//     if(index >= _lines || index < 0){
+//         throw fs_exception("not valid index", -3);
+//     }
+//     std::string *_fdata = new std::string[_lines]; //buffer
+//     for (int i = 0; i < _lines; i++) { // load data in file to array
+//         _fdata[i] = get(i);
+//     }
+//     int * linesTemp = new int(_lines);  // temp count lines
+//     clear();
+//     for (int i = 0; i < *linesTemp; i++){
+//         if (i == index ){
+//             for (int c = 0; c < count; c++){
+//                 add(data); // add data
+//             } 
+//         }
+//         add(_fdata[i]);
+//     }
+//     delete linesTemp;
+//     delete[] _fdata;
+//     update(); // update information of file 
+//     return 0;
+// }
 
 void FSTool::file::clear(){
     std::ofstream *temp = new std::ofstream(this->_fullName); // temp object
@@ -124,7 +124,7 @@ int FSTool::file::find(std::string object, int begin, int end){
         _object = object;
         _begin = begin;
         if(end == 0){
-            _end = _lines;
+            _end = _size;
         }
         else{
             _end = end;

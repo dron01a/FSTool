@@ -110,7 +110,7 @@ namespace FSTool {
             @param begin: start position 
             @param end: stop position
         */
-        virtual int find(std::string object, int begin = 0, int end = 0) = 0;
+        int find(std::string object, int begin = 0, int end = 0);
         
         virtual void update() = 0;   // update information
         
@@ -180,7 +180,7 @@ namespace FSTool {
             @param begin: start position 
             @param end: stop position
         */
-        int find(std::string object, int begin = 0, int end = 0);
+        //int find(std::string object, int begin = 0, int end = 0);
 
         void update();   // update information
     private:
@@ -253,7 +253,7 @@ namespace FSTool {
             @param begin: start position 
             @param end: stop position
         */
-        int find(std::string object, int begin = 0, int end = 0);
+        //int find(std::string object, int begin = 0, int end = 0);
 
         void update();   // update information
     private:
