@@ -235,21 +235,24 @@ void FSTool::binary_file::write(std::string buff, int position){
     bin = new std::ofstream(_fullName, std::ios_base::in | std::ios::binary);
     if(bin->good()){
         if(position == END_OF_FILE){
-            bin->seekp (std::ios::end);
+            bin->seekp(buff.size() - 1, std::ios::end);
         }
         else{
-            bin->seekp (position, std::ios::beg);
+            bin->seekp(position, std::ios::beg);
         }
-        for (int byte = 0; byte < buff.size(); byte++){
-            bin->put(buff[byte]); // write bytes
-        }
+        *bin << buff;
+        //for (int byte = 0; byte < buff.size(); byte++){
+        //    
+        //    *bin << buff[byte];
+        //    //bin->put(buff[byte]); // write bytes
+        //}
         bin->close(); // close stream
     }
     update(); // update information of file 
     delete bin;
 }
 
-void FSTool::binary_file::write(char* buff, int size, int position = 0){
+void FSTool::binary_file::write(char* buff, int size, int position){
     if(!exists()){
         throw fs_exception("file not found", -2); // if file on found 
     }
@@ -277,7 +280,7 @@ std::string FSTool::binary_file::get(int position){
     return get(position, 1);
 }
 
-void FSTool::binary_file::get(char* buff, int size, int position = 0){
+void FSTool::binary_file::get(char* buff, int size, int position){
     if(!exists()){
         throw fs_exception("file not found", -2); // if file on found 
     }
@@ -360,7 +363,7 @@ void FSTool::text_file::update(){
     delete obj;
 }
 
-std::string FSTool::text_file::get(int index){
+std::string FSTool::text_file::get(int index, int size){
     if(!exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
@@ -368,21 +371,29 @@ std::string FSTool::text_file::get(int index){
         throw fs_exception("not valid index", -3);
     }
     std::fstream * object; // temp stream object
+    std::string _buf; 
     object = new std::fstream(_fullName, std::fstream::out | std::fstream::in | std::fstream::binary);
-    std::string result;               // result
+    std::string _result;              // result
     int *iter = new int(0);           // temporary counter
-    while (getline(*object, result)){ // find index
-        if (*iter == index)
-			break;
-		(*iter)++;
+    if (object->good()){                 // find index
+        int *iter = new int(0);           // temporary counter
+        while (getline(*object, _buf)){ // find index
+            if (*iter >= index)
+		    	_result += _buf + "\n";
+		    (*iter)++;
+            if(*iter == index + size){
+                break;
+            }
+        }
+        delete iter;
     }
     object->close();//close file
 	delete iter;
     delete object;
-	return result;
+	return _result;
 }
 
-void FSTool::binary_file::get(char* buff, int size, int position = 0){
+void FSTool::text_file::get(char* buff, int size, int position){
     if(!exists()){
         throw fs_exception("file not found", -2); // if file on found 
     }
@@ -420,27 +431,32 @@ void FSTool::text_file::write(std::string buff, int position){
     if(!exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
-    if(position >= _size || position < 0){
-        throw fs_exception("not valid index", -3);
-    }
-    std::string *_buff = new std::string[_size]; // temp buffeer
-    for(int i = 0; i < _size; i++){
-        _buff[i] = get(i); // load file data to buff 
-    }
-    _buff[position] = buff; // rewrite line 
-    int *linesTemp = new int(_size); 
-    clear(); // delete data in file
     std::ofstream curFile(_fullName,std::fstream::app | std::fstream::binary);
-    for(int i = 0; i < *linesTemp; i++){
-        curFile << _buff[i] << std::endl; // load buf to file  
+    if(position != END_OF_FILE){
+        if((position >= _size || position < 0) && position != 0){
+            throw fs_exception("not valid index", -3);
+        }
+        std::string *_buff = new std::string[_size]; // temp buffeer
+        for(int i = 0; i < _size; i++){
+            _buff[i] = get(i); // load file data to buff 
+        }
+        _buff[position] = buff; // rewrite line 
+        int *linesTemp = new int(_size); 
+        clear(); // delete data in file
+        for(int i = 0; i < *linesTemp; i++){
+            curFile << _buff[i] << std::endl; // load buf to file  
+        }
+        curFile.close();
+        delete[] _buff;
+        delete linesTemp;
     }
-    curFile.close();
-    delete[] _buff;
-    delete linesTemp;
+    else{
+        curFile << buff << std::endl;
+    }
     update(); // update information of file 
 }
 
-void FSTool::text_file::write(char* buff, int size, int position ){
+void FSTool::text_file::write(char* buff, int size, int position){
     if(!exists()){
         throw fs_exception("file not found", -2); // if file exists
     }
@@ -465,3 +481,33 @@ void FSTool::text_file::write(char* buff, int size, int position ){
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FSTool::file * FSTool::open(std::string name, open_mode mode){
+        if(mode == BINARY){
+            return new binary_file(name);
+        }
+        if(mode == TEXT){
+            return new text_file(name);
+        }
+        throw -1;
+    }

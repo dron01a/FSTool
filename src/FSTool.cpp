@@ -8,7 +8,7 @@
 FSTool::FST_object* FSTool::open(std::string name){
     if(exists(name)){
         if(is_file(name)){
-            return new file(name);
+            return open(name, BINARY);
         }
         else if(is_folder){
             return new folder(name);
@@ -65,7 +65,7 @@ int FSTool::find(std::string name, std::string object, int begin, int end){
     }
     FST_object *temp;
     if(is_file(name)){
-        temp = new file(name);
+        temp = open(name, BINARY);
     }
     if(is_folder(name)){
         temp = new folder(name);
@@ -90,7 +90,7 @@ FSTool::FSToken::FSToken(std::string name){
         delete temp; 
     }
     else{
-        file * temp = new FSTool::file(name); // temp object as file
+        file * temp = open(name, BINARY); // temp object as file
         this->_name = temp->name();
         this-> _type = "file"; // set type;
         this->_size = temp->size(); // set size
@@ -165,7 +165,7 @@ std::string FSTool::FSToken::getPath(std::string object){
 
 FSTool::FST_object* FSTool::FSToken::getObject(int index){
     if(_subNodes[index].type() == "file"){
-        return new FSTool::file(_subNodes[index].full_name());
+        return open(_subNodes[index].full_name(), BINARY);
     }
     if(_subNodes[index].type() == "folder"){
         return new FSTool::folder(_subNodes[index].full_name());

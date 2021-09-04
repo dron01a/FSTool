@@ -8,6 +8,11 @@
 #define END_OF_FILE -1
 
 namespace FSTool {
+    
+    enum open_mode{
+        BINARY,
+        TEXT
+    };
 
     // class for work with files
     class file : public FST_object {
@@ -83,7 +88,7 @@ namespace FSTool {
             @param size: buffer size 
             @param position: position in file
         */     
-        virtual void write(char* buff, int size, int position = 0) = 0;
+        virtual void write(char* buff, int size, int position) = 0;
 
          // virtual methods
         /*
@@ -96,8 +101,15 @@ namespace FSTool {
             @param position: position in file
             @param size: size from bytes to copyng to buffer
         */ 
-        virtual std::string get(int position, int size); 
+        virtual std::string get(int position, int size) = 0; 
 
+        /*
+            set to char buffer
+            @param buff: char buffer 
+            @param size: buffer size 
+            @param position: position in file
+        */    
+        virtual void get(char* buff, int size, int position) = 0;
         /*
             check index
             @param index: position
@@ -127,8 +139,6 @@ namespace FSTool {
         mode_t _type;           // constant of file type 
     };
 
-
-
     class binary_file : public file {
     public:
 
@@ -145,7 +155,7 @@ namespace FSTool {
             @param size: buffer size 
             @param position: position in file
         */     
-        void write(char* buff, int size, int position = 0);
+        void write(char* buff, int size, int position);
 
         /*
             insert line from index
@@ -172,7 +182,7 @@ namespace FSTool {
             @param size: buffer size 
             @param position: position in file
         */     
-        void get(char* buff, int size, int position = 0);
+        void get(char* buff, int size, int position);
 
         /*
             find object in file
@@ -197,10 +207,11 @@ namespace FSTool {
             @param name: name of file 
         */
         binary_file(std::string name);      
+
         friend class file;
+
+        friend file * open(std::string name, open_mode mode);
     };
-
-
 
     class text_file : public file {
     public:
@@ -218,7 +229,7 @@ namespace FSTool {
             @param size: buffer size 
             @param position: position in file
         */     
-        void write(char* buff, int size, int position = 0);
+        void write(char* buff, int size, int position);
 
         /*
             insert line from index
@@ -245,7 +256,7 @@ namespace FSTool {
             @param size: buffer size 
             @param position: position in file
         */     
-        void get(char* buff, int size, int position = 0);
+        void get(char* buff, int size, int position);
 
         /*
             find object in file
@@ -272,8 +283,11 @@ namespace FSTool {
         text_file(std::string name);      
 
         friend class file;
+
+        friend file * open(std::string name, open_mode mode);
     };
 
+    file * open(std::string name, open_mode mode);
 };
 
 #endif
